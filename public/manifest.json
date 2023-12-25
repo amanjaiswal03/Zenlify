@@ -7,7 +7,8 @@
     "service_worker": "js/background.js"
   },
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_icon": "images/zenlify_logo.png"
   },
   "permissions": ["tabs", "storage"]
 }
