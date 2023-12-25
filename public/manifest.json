@@ -10,6 +10,6 @@
     "default_popup": "index.html",
     "default_icon": "images/zenlify_logo.png"
   },
-  "permissions": ["tabs", "storage"]
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["<all_urls>"]
 }
-

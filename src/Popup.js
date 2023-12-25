@@ -3,14 +3,22 @@ import React, { useState } from 'react';
 
 function Popup() {
     const [url, setUrl] = useState('');
+
     const blockSite = () => {
-    chrome.storage.sync.get('blockedSites', ({ blockedSites }) => {
-      const updatedBlockedSites = [...blockedSites, new URL(url).hostname];
-      chrome.storage.sync.set({ blockedSites: updatedBlockedSites }, () => {
-        console.log(`Blocked: ${url}`);
-      });
-    });
-  };
+        try {
+            console.log(url);
+            const newUrl = new URL("https://" + url);
+            console.log(newUrl.hostname);
+            chrome.storage.sync.get('blockedSites', ({ blockedSites }) => {
+                const updatedBlockedSites = [...blockedSites, newUrl.hostname];
+                chrome.storage.sync.set({ blockedSites: updatedBlockedSites }, () => {
+                    console.log(`Blocked: ${newUrl}`);
+                });
+            });
+        } catch (error) {
+        console.error('Invalid URL:', url);
+        }
+    };
   
 
   return (
