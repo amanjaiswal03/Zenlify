@@ -1,8 +1,8 @@
-// src/Popup.js
 import React, { useState, useEffect } from 'react';
 
 function Popup() {
     const [url, setUrl] = useState('');
+    const [isEnabled, setIsEnabled] = useState(false);
 
     useEffect(() => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -11,7 +11,19 @@ function Popup() {
                 setUrl(new URL(currentTab.url));
             }
         });
+
+        chrome.storage.sync.get('isEnabled', ({ isEnabled }) => {
+            setIsEnabled(isEnabled);
+        });
     }, []);
+
+    const toggleExtension = () => {
+        const newIsEnabled = !isEnabled;
+        setIsEnabled(newIsEnabled);
+        chrome.storage.sync.set({ isEnabled: newIsEnabled }, () => {
+            console.log(`Extension is ${newIsEnabled ? 'enabled' : 'disabled'}`);
+        });
+    };
 
     const blockSite = () => {
         try {
@@ -29,12 +41,12 @@ function Popup() {
             console.error('Invalid URL:', url.hostname);
         }
     };
-  
 
     return (
         <div>
             <p><strong>You are currently on: </strong><br /> {url.hostname}</p>
             <button onClick={blockSite}>Block Site</button>
+            <button onClick={toggleExtension}>{isEnabled ? 'Disable Extension' : 'Enable Extension'}</button>
         </div>
     );
 }
