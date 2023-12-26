@@ -1,37 +1,42 @@
 // src/Popup.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function Popup() {
     const [url, setUrl] = useState('');
 
+    useEffect(() => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const currentTab = tabs[0];
+            if (currentTab) {
+                setUrl(new URL(currentTab.url));
+            }
+        });
+    }, []);
+
     const blockSite = () => {
         try {
             console.log(url);
-            const newUrl = new URL("https://" + url);
-            console.log(newUrl.hostname);
+            // const newUrl = new URL(url);
             chrome.storage.sync.get('blockedSites', ({ blockedSites }) => {
-                const updatedBlockedSites = [...blockedSites, newUrl.hostname];
+                console.log(blockedSites);
+                const updatedBlockedSites = [...blockedSites, url.hostname];
+                console.log(updatedBlockedSites);
                 chrome.storage.sync.set({ blockedSites: updatedBlockedSites }, () => {
-                    console.log(`Blocked: ${newUrl}`);
+                    console.log(`Blocked: ${url.hostname}`);
                 });
             });
         } catch (error) {
-        console.error('Invalid URL:', url);
+            console.error('Invalid URL:', url.hostname);
         }
     };
   
 
-  return (
-    <div>
-      <input
-        type="text"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        placeholder="Enter URL to block"
-      />
-      <button onClick={blockSite}>Block Site</button>
-    </div>
-  );
+    return (
+        <div>
+            <p><strong>You are currently on: </strong><br /> {url.hostname}</p>
+            <button onClick={blockSite}>Block Site</button>
+        </div>
+    );
 }
 
 export default Popup;
