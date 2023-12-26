@@ -7,7 +7,7 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   chrome.storage.sync.get('blockedSites', ({ blockedSites }) => {
     if (blockedSites.includes(new URL(tab.url).hostname)) {
-      chrome.tabs.remove(tabId);
+      chrome.tabs.update(tabId, { url: 'blocked.html' });
     }
   });
 });
