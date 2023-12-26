@@ -22,6 +22,7 @@ function Popup() {
         setIsEnabled(newIsEnabled);
         chrome.storage.sync.set({ isEnabled: newIsEnabled }, () => {
             console.log(`Extension is ${newIsEnabled ? 'enabled' : 'disabled'}`);
+            chrome.action.setBadgeText({ text: newIsEnabled ? 'ON' : 'OFF' });
         });
     };
 
