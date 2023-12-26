@@ -28,15 +28,13 @@ function Popup() {
 
     const blockSite = () => {
         try {
-            console.log(url);
-            // const newUrl = new URL(url);
             chrome.storage.sync.get('blockedSites', ({ blockedSites }) => {
-                console.log(blockedSites);
-                const updatedBlockedSites = [...blockedSites, url.hostname];
-                console.log(updatedBlockedSites);
-                chrome.storage.sync.set({ blockedSites: updatedBlockedSites }, () => {
-                    console.log(`Blocked: ${url.hostname}`);
-                });
+                if (!blockedSites.includes(url.hostname)) {
+                    const updatedBlockedSites = [...blockedSites, url.hostname];
+                    chrome.storage.sync.set({ blockedSites: updatedBlockedSites });
+                } else {
+                    console.log(`URL already blocked: ${url.hostname}`);
+                }
             });
         } catch (error) {
             console.error('Invalid URL:', url.hostname);
@@ -45,8 +43,8 @@ function Popup() {
 
     return (
         <div>
-            <p><strong>You are currently on: </strong><br /> {url.hostname}</p>
-            <button onClick={blockSite}>Block Site</button>
+            <p><strong>You are currently on: </strong><br /> {url.protocol == "https:" ? url.hostname : 'No valid URL'}</p>
+            <button onClick={blockSite} disabled={url.protocol !== "https:"}>Block Site</button>
             <button onClick={toggleExtension}>{isEnabled ? 'Disable Extension' : 'Enable Extension'}</button>
         </div>
     );
