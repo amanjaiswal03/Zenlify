@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { Link } from 'react-router-dom';
 function Popup() {
     const [url, setUrl] = useState('');
     const [isEnabled, setIsEnabled] = useState(false);
@@ -41,11 +41,16 @@ function Popup() {
         }
     };
 
+    const advancedOption = () => {
+        chrome.runtime.openOptionsPage();
+    };
+
     return (
         <div>
             <p><strong>You are currently on: </strong><br /> {url.protocol == "https:" ? url.hostname : 'No valid URL'}</p>
             <button onClick={blockSite} disabled={url.protocol !== "https:"}>Block Site</button>
             <button onClick={toggleExtension}>{isEnabled ? 'Disable Extension' : 'Enable Extension'}</button>
+            <button onClick={advancedOption}>Advanced options</button>
         </div>
     );
 }

@@ -3,6 +3,7 @@
   "name": "zenlify",
   "version": "1.0",
   "description": "Block distracting content on the web",
+  "options_page": "options.html",
   "background": {
     "service_worker": "js/background.js"
   },
