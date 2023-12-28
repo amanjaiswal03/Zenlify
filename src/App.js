@@ -1,11 +1,13 @@
 // src/App.js
 import React from 'react';
-import Popup from './Components/Popup';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+import Dashboard from './Components/Dashboard';
 
 function App() {
   return (
     <div className="App">
-      <Popup />
+      <Dashboard />
     </div>
   );
 }

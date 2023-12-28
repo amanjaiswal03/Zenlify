@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+
 function Popup() {
     const [url, setUrl] = useState('');
     const [isEnabled, setIsEnabled] = useState(false);

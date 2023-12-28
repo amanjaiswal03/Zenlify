@@ -1,5 +1,4 @@
 
-
 let extensionEnabled = true;
 
 chrome.runtime.onInstalled.addListener(() => {
