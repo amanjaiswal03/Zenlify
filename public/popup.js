@@ -27,10 +27,10 @@ document.addEventListener('DOMContentLoaded', function() {
     blockSiteButton.addEventListener('click', function() {
         try {
             if (url){
-                chrome.storage.sync.get('blockedSites', ({ blockedSites }) => {
-                    if (!blockedSites.includes(url.hostname)) {
-                        const updatedBlockedSites = [...blockedSites, url.hostname];
-                        chrome.storage.sync.set({ blockedSites: updatedBlockedSites });
+                chrome.storage.sync.get('blockedWebsites', ({ blockedWebsites }) => {
+                    if (!blockedWebsites.includes(url.hostname)) {
+                        const updatedBlockedWebsites = [...blockedWebsites, url.hostname];
+                        chrome.storage.sync.set({ blockedWebsites: updatedBlockedWebsites });
                     } else {
                         console.log(`URL already blocked: ${url.hostname}`);
                     }
