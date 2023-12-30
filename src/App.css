@@ -36,3 +36,34 @@
     transform: rotate(360deg);
   }
 }
+
+/* BEGIN: Sidepanel */
+.sidepanel {
+  width: 200px;
+  background-color: #f1f1f1;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+  list-style-type: none; 
+}
+
+.sidepanel a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 20px;
+  color: #818181;
+  display: block;
+}
+
+.sidepanel a:hover {
+  color: #000000;
+}
+
+.sidepanel .active {
+  background-color: #4CAF50;
+  color: #000000;
+}
+/* END: Sidepanel */

@@ -9,15 +9,13 @@ import BlockedWebsites from './Components/BlockedWebsites';
 function App() {
   return (
     <div className="App">
-      <Sidepanel />
-      <BlockedWebsites />
-      
-      {/* <Router>
+      <Router>
+        <Sidepanel />
         <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/blocked-websites" element={<BlockedWebsites />} />
         </Routes>
-      </Router> */}
+      </Router>
     </div>
   );
 }
