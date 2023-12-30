@@ -50,6 +50,7 @@ const BlockedWebsites = () => {
             <ul>
                 {blockedWebsites.map((website) => (
                     <li key={website}>
+                        <img src={`https://www.google.com/s2/favicons?domain=${website}`} alt="Website Icon" />
                         {website}
                         <button onClick={() => handleRemoveFromBlockedWebsites(website)}>Remove</button>
                     </li>
