@@ -8,8 +8,8 @@ function Sidepanel() {
     return (
         <div className="sidepanel">
             <ul>
-                <li className={location.pathname === "/" ? "active" : ""}>
-                    <Link to="/">Dashboard</Link>
+                <li className={location.pathname === "/index.html" ? "active" : ""}>
+                    <Link to="/index.html">Dashboard</Link>
                 </li>
                 <li className={location.pathname === "/blocked-websites" ? "active" : ""}>
                     <Link to="/blocked-websites">Blocked websites</Link>

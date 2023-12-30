@@ -13,7 +13,7 @@ function App() {
         <Sidepanel />
         <Routes>
           <Route path="/blocked-websites" element={<BlockedWebsites />} />
-          <Route path="/*" element={<Dashboard />} />
+          <Route path="/index.html" element={<Dashboard />} />
         </Routes>
       </Router>
     </div>
