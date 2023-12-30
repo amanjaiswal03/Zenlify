@@ -14,12 +14,18 @@ const BlockedWebsites = () => {
     }, []);
 
     const handleAddToBlockedWebsites = () => {
-        // Add website to blockedWebsites array
-        const updatedBlockedWebsites = [...blockedWebsites, searchTerm];
-        setBlockedWebsites(updatedBlockedWebsites);
+        // Add website to blockedWebsites array if it is not already present
+        let updatedWebsite = searchTerm;
+        if (!searchTerm.startsWith('www.')) {
+            updatedWebsite = 'www.' + searchTerm;
+        }
+        if (!blockedWebsites.includes(updatedWebsite)) {
+            const updatedBlockedWebsites = [...blockedWebsites, updatedWebsite];
+            setBlockedWebsites(updatedBlockedWebsites);
 
-        // Save updated blockedWebsites array to chrome.storage.sync
-        chrome.storage.sync.set({ blockedWebsites: updatedBlockedWebsites });
+            // Save updated blockedWebsites array to chrome.storage.sync
+            chrome.storage.sync.set({ blockedWebsites: updatedBlockedWebsites });
+        }
     };
 
     const handleRemoveFromBlockedWebsites = (website) => {
