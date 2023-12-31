@@ -1,11 +1,21 @@
 // src/App.js
 import React from 'react';
-import Popup from './Popup';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+import Dashboard from './Components/Dashboard';
+import Sidepanel from './Components/Sidepanel';
+import BlockedWebsites from './Components/BlockedWebsites';
 
 function App() {
   return (
     <div className="App">
-      <Popup />
+      <Router>
+        <Sidepanel />
+        <Routes>
+          <Route path="/blocked-websites" element={<BlockedWebsites />} />
+          <Route path="/index.html" element={<Dashboard />} />
+        </Routes>
+      </Router>
     </div>
   );
 }

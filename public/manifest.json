@@ -3,13 +3,14 @@
   "name": "zenlify",
   "version": "1.0",
   "description": "Block distracting content on the web",
+  "options_page": "index.html",
   "background": {
     "service_worker": "js/background.js"
   },
   "action": {
-    "default_popup": "index.html",
+    "default_popup": "popup.html",
     "default_icon": "images/zenlify_logo.png"
   },
-  "permissions": ["tabs", "storage"],
+  "permissions": ["tabs", "storage", "activeTab"],
   "host_permissions": ["<all_urls>"]
 }
