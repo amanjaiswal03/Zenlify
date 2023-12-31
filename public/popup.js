@@ -31,6 +31,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!blockedWebsites.includes(url.hostname)) {
                         const updatedBlockedWebsites = [...blockedWebsites, url.hostname];
                         chrome.storage.sync.set({ blockedWebsites: updatedBlockedWebsites });
+
+                        //Reload current tab
+                        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                            const currentTab = tabs[0];
+                            chrome.tabs.reload(currentTab.id);
+                        });
+                        
                     } else {
                         console.log(`URL already blocked: ${url.hostname}`);
                     }
@@ -46,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.storage.sync.set({ isEnabled: isEnabled }, () => {
             console.log(`Extension is ${isEnabled ? 'enabled' : 'disabled'}`);
             toggleExtensionButton.textContent = isEnabled ? 'Disable Extension' : 'Enable Extension';
-            // Assuming you have a badge to set
+            // Set badge text to ON or OFF
             chrome.action.setBadgeText({ text: isEnabled ? 'ON' : 'OFF' });
         });
     });
