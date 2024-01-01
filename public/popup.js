@@ -7,6 +7,52 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleExtensionButton = document.getElementById('toggle-extension-btn');
     const advancedOptionButton = document.getElementById('advanced-option-btn');
 
+    // Pomodoro timer
+    const startButton = document.getElementById('start');
+    const resetButton = document.getElementById('reset');
+    const timerDisplay = document.getElementById('time');
+    const pomodoroDurationInput = document.getElementById('pomodoroDuration');
+    const breakDurationInput = document.getElementById('breakDuration');
+
+    let isTimerRunning = false; // Add a flag to track if the timer is running
+
+    startButton.addEventListener('click', function() {
+        if (isTimerRunning) {
+            // Pause the timer
+            chrome.runtime.sendMessage({ command: 'pause' });
+            startButton.textContent = 'Start'; // Change the button text to 'Start'
+        } else {
+            // Start the timer
+            const pomodoroDuration = parseInt(pomodoroDurationInput.value) || 25;
+            const breakDuration = parseInt(breakDurationInput.value) || 5;
+            chrome.runtime.sendMessage({ command: 'start', pomodoroDuration, breakDuration });
+            startButton.textContent = 'Pause'; // Change the button text to 'Pause'
+        }
+        isTimerRunning = !isTimerRunning; // Toggle the timer running flag
+    });
+
+    resetButton.addEventListener('click', function() {
+        chrome.runtime.sendMessage({ command: 'reset' });
+        startButton.textContent = 'Start'; // Reset the button text to 'Start'
+        isTimerRunning = false; // Reset the timer running flag
+    });
+
+    function requestTimerUpdate() {
+        chrome.runtime.sendMessage({ command: 'getTimer' });
+    }
+    
+
+    chrome.runtime.onMessage.addListener((msg, sender, response) => {
+    if (msg.minutes != undefined && msg.seconds != undefined) {
+        timerDisplay.textContent = `${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`;
+    }
+    });
+
+    requestTimerUpdate();
+    setInterval(requestTimerUpdate, 1000);
+
+    // End of Pomodoro timer
+
     // Initialize URL and buttons
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const currentTab = tabs[0];
