@@ -58,6 +58,7 @@ function startTimer(duration) {
   if (!timerRunning) {
     timerDuration = isPaused ? pausedTime : duration; // Start from paused time if timer was paused
     timerRunning = true;
+    isPaused = false;
     chrome.alarms.create('pomodoroTimer', { delayInMinutes: 1 / 60 });
     updateTimer();
   }
@@ -80,6 +81,7 @@ function resetTimer() {
   clearInterval(countdown);
   timerRunning = false;
   onBreak = false;
+  isPaused = false;
   timerDuration = pomodoroDuration;
   sendTimer();
 }
