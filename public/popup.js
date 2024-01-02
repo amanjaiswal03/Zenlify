@@ -11,10 +11,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const startButton = document.getElementById('start');
     const resetButton = document.getElementById('reset');
     const timerDisplay = document.getElementById('time');
+    
+    
     const pomodoroDurationInput = document.getElementById('pomodoroDuration');
     const breakDurationInput = document.getElementById('breakDuration');
 
     let isTimerRunning = false; // Add a flag to track if the timer is running
+
+    // Check if the timer is running when the popup is opened
+    chrome.runtime.sendMessage({ command: 'isRunning' }, (response) => {
+        console.log(response);
+        if (response) {
+            startButton.textContent = 'Pause'; // Set the button text to 'Pause'
+            isTimerRunning = true; // Set the timer running flag to true
+        } else {
+            startButton.textContent = 'Start'; // Set the button text to 'Start'
+            isTimerRunning = false; // Set the timer running flag to false
+        }
+    });
 
     startButton.addEventListener('click', function() {
         if (isTimerRunning) {

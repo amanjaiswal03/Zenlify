@@ -46,6 +46,9 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
     case 'getTimer':
       sendTimer();
       break;
+    case 'isRunning':
+      response(timerRunning);
+      break;
     default:
       console.error('Unrecognized command');
   }
