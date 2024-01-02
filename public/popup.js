@@ -1,18 +1,18 @@
+// Event listener for when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     let isEnabled = false;
     let url; // Declare url as a global variable
 
+    // Get elements from the DOM
     const urlHostnameElement = document.getElementById('url-hostname');
     const blockSiteButton = document.getElementById('block-site-btn');
     const toggleExtensionButton = document.getElementById('toggle-extension-btn');
     const advancedOptionButton = document.getElementById('advanced-option-btn');
 
-    // Pomodoro timer
+    // Pomodoro timer elements
     const startButton = document.getElementById('start');
     const resetButton = document.getElementById('reset');
     const timerDisplay = document.getElementById('time');
-    
-    
     const pomodoroDurationInput = document.getElementById('pomodoroDuration');
     const breakDurationInput = document.getElementById('breakDuration');
 
@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Event listener for start button
     startButton.addEventListener('click', function() {
         if (isTimerRunning) {
             // Pause the timer
@@ -45,21 +46,23 @@ document.addEventListener('DOMContentLoaded', function() {
         isTimerRunning = !isTimerRunning; // Toggle the timer running flag
     });
 
+    // Event listener for reset button
     resetButton.addEventListener('click', function() {
         chrome.runtime.sendMessage({ command: 'reset' });
         startButton.textContent = 'Start'; // Reset the button text to 'Start'
         isTimerRunning = false; // Reset the timer running flag
     });
 
+    // Function to request timer update from background script
     function requestTimerUpdate() {
         chrome.runtime.sendMessage({ command: 'getTimer' });
     }
-    
 
+    // Update timer display when receiving message from background script
     chrome.runtime.onMessage.addListener((msg, sender, response) => {
-    if (msg.minutes != undefined && msg.seconds != undefined) {
-        timerDisplay.textContent = `${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`;
-    }
+        if (msg.minutes != undefined && msg.seconds != undefined) {
+            timerDisplay.textContent = `${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`;
+        }
     });
 
     requestTimerUpdate();
@@ -79,11 +82,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Get extension state from storage and update toggle button
     chrome.storage.sync.get('isEnabled', (data) => {
         isEnabled = !!data.isEnabled;
         toggleExtensionButton.textContent = isEnabled ? 'Disable Extension' : 'Enable Extension';
     });
 
+    // Event listener for block site button
     blockSiteButton.addEventListener('click', function() {
         try {
             if (url){
@@ -92,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const updatedBlockedWebsites = [...blockedWebsites, url.hostname];
                         chrome.storage.sync.set({ blockedWebsites: updatedBlockedWebsites });
 
-                        //Reload current tab
+                        // Reload current tab
                         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                             const currentTab = tabs[0];
                             chrome.tabs.reload(currentTab.id);
@@ -108,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Event listener for toggle extension button
     toggleExtensionButton.addEventListener('click', function() {
         isEnabled = !isEnabled;
         chrome.storage.sync.set({ isEnabled: isEnabled }, () => {
@@ -118,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Event listener for advanced option button
     advancedOptionButton.addEventListener('click', function() {
         // Open advanced options
         chrome.runtime.openOptionsPage();

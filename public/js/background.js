@@ -1,11 +1,13 @@
 
 let extensionEnabled = true;
 
+// Event listener for when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeText({ text: 'ON' });
   chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true });
 });
 
+// Event listener for when a tab is updated
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   chrome.storage.sync.get(['blockedWebsites', 'isEnabled'], ({ blockedWebsites, isEnabled }) => {
     if (isEnabled && blockedWebsites.includes(new URL(tab.url).hostname)) {
@@ -18,7 +20,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   });
 });
 
-//pomodoro timer
+// Pomodoro timer variables
 let countdown;
 let timerDuration;
 let timerRunning = false;
@@ -28,8 +30,7 @@ let breakDuration = 5 * 60; // default break duration
 let isPaused = false;
 let pausedTime = 0;
 
-
-
+// Event listener for messages from the popup
 chrome.runtime.onMessage.addListener((msg, sender, response) => {
   switch (msg.command) {
     case 'start':
@@ -54,6 +55,7 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
   }
 });
 
+// Function to start the timer
 function startTimer(duration) {
   if (!timerRunning) {
     timerDuration = isPaused ? pausedTime : duration; // Start from paused time if timer was paused
@@ -64,6 +66,7 @@ function startTimer(duration) {
   }
 }
 
+// Function to update the timer every second
 function updateTimer() {
   countdown = setInterval(() => {
     timerDuration--;
@@ -77,6 +80,7 @@ function updateTimer() {
   }, 1000);
 }
 
+// Function to reset the timer
 function resetTimer() {
   clearInterval(countdown);
   timerRunning = false;
@@ -85,6 +89,8 @@ function resetTimer() {
   timerDuration = pomodoroDuration;
   sendTimer();
 }
+
+// Function to pause the timer
 function pauseTimer() {
   if (timerRunning) {
     clearInterval(countdown);
@@ -95,12 +101,14 @@ function pauseTimer() {
   }
 }
 
+// Function to send the timer to the popup
 function sendTimer() {
   const minutes = Math.floor(timerDuration / 60);
   const seconds = timerDuration % 60;
   chrome.runtime.sendMessage({ minutes: minutes, seconds: seconds, onBreak: onBreak });
 }
 
+// Event listener for when the alarm goes off
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'pomodoroTimer' && timerRunning) {
     timerDuration--;
