@@ -74,7 +74,11 @@ function updateTimer() {
       clearInterval(countdown);
       timerRunning = false;
       onBreak = !onBreak;
-      startTimer(onBreak ? breakDuration : pomodoroDuration);
+      if (onBreak) {
+        startTimer(breakDuration);
+      } else {
+        resetTimer(); // Reset the timer when the break time is finished
+      }
     }
     sendTimer();
   }, 1000);
