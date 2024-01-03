@@ -74,9 +74,8 @@ function updateTimer() {
       clearInterval(countdown);
       timerRunning = false;
       onBreak = !onBreak;
-      if (onBreak) {
-        startTimer(breakDuration);
-      } else {
+      displayNotification();
+      if (!onBreak) {
         resetTimer(); // Reset the timer when the break time is finished
       }
     }
@@ -109,20 +108,45 @@ function pauseTimer() {
 function sendTimer() {
   const minutes = Math.floor(timerDuration / 60);
   const seconds = timerDuration % 60;
-  chrome.runtime.sendMessage({ minutes: minutes, seconds: seconds, onBreak: onBreak });
+  chrome.runtime.sendMessage({ minutes: minutes, seconds: seconds, onBreak: onBreak }, function(response) {
+    if (chrome.runtime.lastError) {
+      // Handle error
+      console.log(chrome.runtime.lastError.message);
+    }
+  });
 }
 
-// Event listener for when the alarm goes off
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'pomodoroTimer' && timerRunning) {
-    timerDuration--;
-    if (timerDuration <= 0) {
-      clearInterval(countdown);
-      timerRunning = false;
-      onBreak = !onBreak;
-      const nextDuration = onBreak ? breakDuration : pomodoroDuration;
-      startTimer(nextDuration);
-    }
-    sendTimer();
-  }
-});
+// Function to display a notification when the timer is finished
+function displayNotification() {
+  const buttonTitle = onBreak ? 'Start Break' : 'Finish session';
+  chrome.notifications.create('pomodoroNotification', {
+    type: 'basic',
+    iconUrl: '../images/zenlify_logo.png',
+    title: onBreak ? 'Take a break!' : 'The pomodoro session is over!',
+    message: onBreak ? 'Take a break!' : 'The pomodoro session is over!',
+    buttons: [
+      { title: buttonTitle }
+    ],
+    requireInteraction: true // Prevent the notification from disappearing until the user clicks on the button
+  }, (notificationId) => {
+    // Event listener for when the notification button is clicked
+    chrome.notifications.onButtonClicked.addListener((clickedNotificationId, buttonIndex) => {
+      if (clickedNotificationId === notificationId && buttonIndex === 0) {
+        if (!onBreak) {
+          // Handle "Finish Timer" button click
+          resetTimer();
+        } else {
+          // Handle "Start Break" button click
+          startBreakTimer();
+        }
+      }
+    });
+  });
+}
+
+function startBreakTimer() {
+  timerDuration = breakDuration;
+  startTimer(timerDuration);
+}
+
+
