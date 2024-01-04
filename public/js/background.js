@@ -127,7 +127,8 @@ function displayNotification() {
     buttons: [
       { title: buttonTitle }
     ],
-    requireInteraction: true // Prevent the notification from disappearing until the user clicks on the button
+    requireInteraction: true, // Prevent the notification from disappearing until the user clicks on the button
+    priority: 2
   }, (notificationId) => {
     // Event listener for when the notification button is clicked
     chrome.notifications.onButtonClicked.addListener((clickedNotificationId, buttonIndex) => {
