@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (msg.minutes != undefined && msg.seconds != undefined) {
             timerDisplay.textContent = `${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`;
         }
+        response('Timer updated');
     });
 
     requestTimerUpdate();
