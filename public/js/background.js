@@ -31,7 +31,7 @@ let isPaused = false;
 let pausedTime = 0;
 
 // Event listener for messages from the popup
-chrome.runtime.onMessage.addListener((msg, sender, response) => {
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   switch (msg.command) {
     case 'start':
       pomodoroDuration = msg.pomodoroDuration * 60 || pomodoroDuration;
@@ -48,7 +48,11 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
       sendTimer();
       break;
     case 'isRunning':
-      response(timerRunning);
+      sendResponse(timerRunning);
+      break;
+    case 'inputData':
+      logAchievement(msg.achievement);
+      sendResponse({ status: 'success' });
       break;
     default:
       console.error('Unrecognized command');
@@ -77,6 +81,7 @@ function updateTimer() {
       displayNotification();
       if (!onBreak) {
         resetTimer(); // Reset the timer when the break time is finished
+        
       }
     }
     sendTimer();
@@ -97,12 +102,45 @@ function resetTimer() {
 function pauseTimer() {
   if (timerRunning) {
     clearInterval(countdown);
-    timerRunning = false;
     isPaused = true;
     pausedTime = timerDuration;
     sendTimer();
   }
 }
+
+//function to open achievement input page
+function openInputPage() {
+    chrome.windows.create({ url: 'input.html', type: 'popup', width: 500, height: 600 });
+}
+
+// Function to log the achievement
+function logAchievement(achievement) {
+  const startDate = new Date();
+  const endTime = startDate.getTime();
+  const startTime = endTime - (pomodoroDuration * 1000);
+  const totalTimeElapsed = pomodoroDuration * 1000;
+  // Save the data to Chrome storage
+  chrome.storage.sync.get('focusSessionData', (result) => {
+    let focusSessionData = Array.isArray(result.focusSessionData) ? result.focusSessionData : [];
+    const data = {
+      startDate: startDate,
+      startTime: startTime,
+      endTime: endTime,
+      totalTimeElapsed: totalTimeElapsed,
+      achievement: achievement
+    };
+    focusSessionData.push(data);
+    chrome.storage.sync.set({ focusSessionData: focusSessionData }, () => {
+      if (chrome.runtime.lastError) {
+        // Handle error
+        console.log(chrome.runtime.lastError.message);
+      } else {
+        console.log('Achievement data saved to Chrome storage.');
+      }
+    });
+  })
+}
+
 
 // Function to send the timer to the popup
 function sendTimer() {
@@ -136,8 +174,10 @@ function displayNotification() {
         if (!onBreak) {
           // Handle "Finish Timer" button click
           resetTimer();
+          
         } else {
           // Handle "Start Break" button click
+          openInputPage();
           startBreakTimer();
         }
       }

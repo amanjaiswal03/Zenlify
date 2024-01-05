@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 const Dashboard = () => {
     const [isTimerRunning, setIsTimerRunning] = useState(false);
-    const [timerDisplay, setTimerDisplay] = useState('');
+    const [timerDisplay, setTimerDisplay] = useState('25:00');
     const [pomodoroDuration, setPomodoroDuration] = useState(25);
     const [breakDuration, setBreakDuration] = useState(5);
 
