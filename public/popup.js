@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const breakDurationInput = document.getElementById('breakDuration');
 
     let isTimerRunning = false; // Add a flag to track if the timer is running
+    timerDisplay.textContent = (pomodoroDurationInput.value ? pomodoroDurationInput.value : '25') + ':00'; // Set the initial timer display
 
     // Check if the timer is running when the popup is opened
     chrome.runtime.sendMessage({ command: 'isRunning' }, (response) => {
