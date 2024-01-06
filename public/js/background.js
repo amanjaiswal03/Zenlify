@@ -29,6 +29,10 @@ let pomodoroDuration = 25 * 60; // default Pomodoro duration
 let breakDuration = 5 * 60; // default break duration
 let isPaused = false;
 let pausedTime = 0;
+let startDate;
+let endTime;
+let startTime;
+let totalTimeElapsed;
 
 // Event listener for messages from the popup
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -111,17 +115,19 @@ function pauseTimer() {
 //function to open achievement input page
 function openInputPage() {
     chrome.windows.create({ url: 'input.html', type: 'popup', width: 500, height: 600 });
+    startDate = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });;
+    endTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    startTime = new Date(new Date().getTime() - (pomodoroDuration * 1000)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    totalTimeElapsed = new Date(pomodoroDuration * 1000).toISOString().slice(11, 19);
 }
 
 // Function to log the achievement
 function logAchievement(achievement) {
-  const startDate = new Date();
-  const endTime = startDate.getTime();
-  const startTime = endTime - (pomodoroDuration * 1000);
-  const totalTimeElapsed = pomodoroDuration * 1000;
+  
   // Save the data to Chrome storage
   chrome.storage.sync.get('focusSessionData', (result) => {
     let focusSessionData = Array.isArray(result.focusSessionData) ? result.focusSessionData : [];
+    
     const data = {
       startDate: startDate,
       startTime: startTime,
