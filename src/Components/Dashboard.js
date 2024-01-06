@@ -98,8 +98,10 @@ const Dashboard = () => {
                 <input
                     type="date"
                     defaultValue={new Date().toISOString().split('T')[0]}
+                    max={new Date().toISOString().split('T')[0]}
                     onChange={(e) => filterFocusSessionData(e.target.value)}
                 />
+                
                 <table>
                     <thead>
                         <tr>
