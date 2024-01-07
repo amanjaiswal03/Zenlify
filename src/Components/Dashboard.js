@@ -6,6 +6,7 @@ const Dashboard = () => {
     const [pomodoroDuration, setPomodoroDuration] = useState(25);
     const [breakDuration, setBreakDuration] = useState(5);
     const [focusSessionData, setFocusSessionData] = useState([]);
+    const [browsingHistory, setBrowsingHistory] = useState([]);
 
     useEffect(() => {
         // Check if the timer is running when the component is mounted
@@ -28,11 +29,18 @@ const Dashboard = () => {
 
         filterFocusSessionData(new Date().toISOString().split('T')[0]);
 
+
+        // Fetch browsing history on component mount
+        filterBrowsingHistory(new Date().toISOString().split('T')[0]);
+
         // Cleanup interval on component unmount
         return () => clearInterval(interval);
 
         
     }, []);
+
+
+
 
     const handleStartButtonClick = () => {
         if (isTimerRunning) {
@@ -66,6 +74,23 @@ const Dashboard = () => {
                 // Update the focus session data state with the filtered data
                 setFocusSessionData(filteredData);
             });
+    };
+
+    // Function to filter browsing history by date
+    const filterBrowsingHistory = (date) => {
+        //convert date to string and in the format "January 6, 2024"
+        date = new Date(date).toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+        });
+
+        chrome.storage.sync.get('browsingHistory', (result) => {
+            console.log(result);
+            const filteredHistory = result.browsingHistory?.filter((entry) => entry.date === date);
+            console.log(filteredHistory);
+            setBrowsingHistory(filteredHistory);
+        });
     };
 
     return (
@@ -121,6 +146,36 @@ const Dashboard = () => {
                     </tbody>
                 </table>
             </div>
+            <div id = "browsing-history">
+            <h1>Browsing statistics </h1>
+            {/* Date filter */}
+            <input
+                type="date"
+                defaultValue={new Date().toISOString().split('T')[0]}
+                max={new Date().toISOString().split('T')[0]}
+                onChange={(e) => filterBrowsingHistory(e.target.value)}
+            />
+
+            {/* Browsing history table */}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Website</th>
+                        <th>Times visited</th>
+                        <th>Time spent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {browsingHistory?.map((entry, index) => (
+                        <tr key={index}>
+                            <td>{entry.website}</td>
+                            <td>{entry.timesVisited}</td>
+                            <td>{entry.formattedtimeSpent}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
 
             
         </div>
