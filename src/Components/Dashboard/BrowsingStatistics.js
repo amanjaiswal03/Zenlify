@@ -27,18 +27,19 @@ const BrowsingStatistics = () => {
 
         console.log(date);
         let filteredDate = new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        let key = 'browsingHistory-' + filteredDate;
         console.log(filteredDate);
 
-        chrome.storage.sync.get('browsingHistory', (result) => {
+        chrome.storage.sync.get(key, (result) => {
             console.log(result);
-            const filteredHistory = result.browsingHistory?.filter((entry) => entry.date === filteredDate);
+            const filteredHistory = result[key];
             console.log(filteredHistory);
             if (filterBy === 'mostVisited') {
-                filteredHistory.sort((a, b) => b.timesVisited - a.timesVisited);
+                filteredHistory?.sort((a, b) => b.timesVisited - a.timesVisited);
             } else if (filterBy === 'mostTimeSpent') {
-                filteredHistory.sort((a, b) => b.timeSpent - a.timeSpent);
+                filteredHistory?.sort((a, b) => b.timeSpent - a.timeSpent);
             }
-            setBrowsingHistory(filteredHistory); // Reverse the array to get descending order
+            setBrowsingHistory(filteredHistory); 
         });
     };
 

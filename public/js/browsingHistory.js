@@ -19,7 +19,7 @@ const saveBrowsingHistory = (website, timeSpent) => {
   }
 
   // Save browsing history to chrome storage
-  chrome.storage.sync.set({ browsingHistory });
+  chrome.storage.sync.set({ ['browsingHistory-'+ formattedDate]: browsingHistory });
 };
 
 
