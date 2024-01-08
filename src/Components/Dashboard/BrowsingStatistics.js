@@ -2,25 +2,43 @@ import React, { useState, useEffect } from 'react';
 
 const BrowsingStatistics = () => {
     const [browsingHistory, setBrowsingHistory] = useState([]);
+    const [filterBy, setFilterBy] = useState('mostVisited');
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
     useEffect(() => {
-        filterBrowsingHistory(new Date().toISOString().split('T')[0]);
-    }, []);
+        filterBrowsingHistory();
+    }, [date, filterBy]);
+    
+
+    // Function to handle filter change
+    const handleFilterChange = (e) => {
+        setFilterBy(e.target.value);
+    };
+
+    //Function to handle date change
+    const hanldeDateChange = (e) => {
+        setDate(e.target.value);
+    };
+
+    
 
      // Function to filter browsing history by date
-     const filterBrowsingHistory = (date) => {
-        //convert date to string and in the format "January 6, 2024"
-        date = new Date(date).toLocaleDateString('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-        });
+     const filterBrowsingHistory = () => {
+
+        console.log(date);
+        let filteredDate = new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        console.log(filteredDate);
 
         chrome.storage.sync.get('browsingHistory', (result) => {
             console.log(result);
-            const filteredHistory = result.browsingHistory?.filter((entry) => entry.date === date);
+            const filteredHistory = result.browsingHistory?.filter((entry) => entry.date === filteredDate);
             console.log(filteredHistory);
-            setBrowsingHistory(filteredHistory);
+            if (filterBy === 'mostVisited') {
+                filteredHistory.sort((a, b) => b.timesVisited - a.timesVisited);
+            } else if (filterBy === 'mostTimeSpent') {
+                filteredHistory.sort((a, b) => b.timeSpent - a.timeSpent);
+            }
+            setBrowsingHistory(filteredHistory); // Reverse the array to get descending order
         });
     };
 
@@ -28,12 +46,12 @@ const BrowsingStatistics = () => {
         <div id = "browsing-history">
             <h1>Browsing statistics </h1>
             {/* Date filter */}
-            <input
-                type="date"
-                defaultValue={new Date().toISOString().split('T')[0]}
-                max={new Date().toISOString().split('T')[0]}
-                onChange={(e) => filterBrowsingHistory(e.target.value)}
-            />
+            <input type="date" value={date} max={new Date().toISOString().split('T')[0]} onChange={hanldeDateChange} />
+            {/* Filter by */}
+            <select onChange={handleFilterChange}>
+                <option value="mostVisited">Most visited</option>
+                <option value="mostTimeSpent">Most time spent</option>
+            </select>
 
             {/* Browsing history table */}
             <table>
