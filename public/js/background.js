@@ -9,6 +9,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 let tabTimes = {};
+let tabUrls = {};
 
 // Event listener for when a tab is activated
 chrome.tabs.onActivated.addListener(activeInfo => {
@@ -19,6 +20,18 @@ chrome.tabs.onActivated.addListener(activeInfo => {
     chrome.tabs.get(tabId, tab => {
       saveBrowsingHistory(new URL(tab.url).hostname, timeSpent);
     });
+
+    tabTimes[tabId] = Date.now();
+  }
+});
+
+chrome.tabs.onRemoved.addListener(tabId => {
+  if (tabTimes[tabId]) {
+    const timeSpent = Date.now() - tabTimes[tabId];
+    chrome.tabs.get(tabId, tab => {
+      saveBrowsingHistory(new URL(tab.url).hostname, timeSpent);
+    });
+    delete tabTimes[tabId];
   }
 });
 
@@ -37,7 +50,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     } else if (changeInfo.status === 'complete' && (tab.url.startsWith('http://') || tab.url.startsWith('https://'))) {
       // Store the timestamp when the user enters the website
       tabTimes[tabId] = Date.now();
-      saveBrowsingHistory(new URL(tab.url).hostname, 0);
+      if (tabUrls[tabId] !== new URL(tab.url).hostname) {
+        saveBrowsingHistory(new URL(tab.url).hostname, 0);
+      }
+      tabUrls[tabId] = new URL(tab.url).hostname;
     }
   });
 });
