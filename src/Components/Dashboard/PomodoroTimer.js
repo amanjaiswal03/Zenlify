@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-const Dashboard = () => {
+function PomodoroTimer() {
     const [isTimerRunning, setIsTimerRunning] = useState(false);
     const [timerDisplay, setTimerDisplay] = useState('25:00');
     const [pomodoroDuration, setPomodoroDuration] = useState(25);
     const [breakDuration, setBreakDuration] = useState(5);
-    const [focusSessionData, setFocusSessionData] = useState([]);
 
     useEffect(() => {
         // Check if the timer is running when the component is mounted
@@ -26,12 +25,8 @@ const Dashboard = () => {
             chrome.runtime.sendMessage({ command: 'getTimer' });
         }, 1000);
 
-        filterFocusSessionData(new Date().toISOString().split('T')[0]);
 
-        // Cleanup interval on component unmount
         return () => clearInterval(interval);
-
-        
     }, []);
 
     const handleStartButtonClick = () => {
@@ -50,23 +45,6 @@ const Dashboard = () => {
         setIsTimerRunning(false);
     };
 
-    // Function to filter focus session data by date
-    
-    const filterFocusSessionData = (date) => {
-            //convert date to string and in the format "January 6, 2024"
-            date = new Date(date).toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-            });
-            console.log(date);
-            //set focus session data from chrome storage
-            chrome.storage.sync.get('focusSessionData', (result) => {
-                const filteredData = result.focusSessionData?.filter(session => session.startDate === date);
-                // Update the focus session data state with the filtered data
-                setFocusSessionData(filteredData);
-            });
-    };
 
     return (
         <div>
@@ -89,42 +67,8 @@ const Dashboard = () => {
                 value={breakDuration}
                 onChange={(e) => setBreakDuration(parseInt(e.target.value))}
             />
-
-            {/* Display focus session data */}
-
-            <div id = "focus-sessions">
-                <h1>Focus session history </h1>
-                {/* Filter focus session data by date */}
-                <input
-                    type="date"
-                    defaultValue={new Date().toISOString().split('T')[0]}
-                    max={new Date().toISOString().split('T')[0]}
-                    onChange={(e) => filterFocusSessionData(e.target.value)}
-                />
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Time-period</th>
-                            <th>Total time</th>
-                            <th>Achievements</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {focusSessionData?.map((session, index) => (
-                            <tr key={index}>
-                                <td>{`${session.startTime} - ${session.endTime}`}</td>
-                                <td>{session.totalTimeElapsed}</td>
-                                <td>{session.achievement}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            
         </div>
     );
-};
+}
 
-export default Dashboard;
+export default PomodoroTimer;
