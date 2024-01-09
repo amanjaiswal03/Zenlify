@@ -5,13 +5,14 @@ import { saveBrowsingHistory } from './browsingHistory.js';
 // Event listener for when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeText({ text: 'ON' });
-  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true});
+  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true, maxTabs : 20});
 });
 
 let tabTimes = {};
 let tabUrls = {};
+let maxTabs = 20;
 
-// Event listener for when a tab is activated
+// Event listener for when a tab is activated (logs the time spent on the website)
 chrome.tabs.onActivated.addListener(activeInfo => {
   const { tabId } = activeInfo;
   if (tabTimes[tabId]) {
@@ -25,7 +26,7 @@ chrome.tabs.onActivated.addListener(activeInfo => {
   }
 });
 
-// Event listener for when a tab is removed
+// Event listener for when a tab is removed (logs the time spent on the website)
 chrome.tabs.onRemoved.addListener(tabId => {
   if (tabTimes[tabId]) {
     const timeSpent = Date.now() - tabTimes[tabId];
@@ -39,7 +40,7 @@ chrome.tabs.onRemoved.addListener(tabId => {
 
 
 
-// Event listener for when a tab is updated
+// Event listener for when a tab is updated (checks if the website is blocked or logs the time spent on the website)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   console.log('test');
   chrome.storage.sync.get(['blockedWebsites', 'isEnabled'], ({ blockedWebsites, isEnabled }) => {
@@ -87,5 +88,21 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
+// Event listener for when a new tab is created (checks if the number of tabs exceeds the limit)
+chrome.tabs.onCreated.addListener(() => {
+  chrome.storage.sync.get('maxTabs', (result) =>
+    chrome.tabs.query({currentWindow: true}, tabs => {
+      if (tabs.length >= result.maxTabs) {
+          chrome.tabs.remove(tabs[tabs.length - 1].id);
+          chrome.notifications.create({
+              type: 'basic',
+              title: 'Unable to open new tab',
+              iconUrl: '../images/zenlify_logo.png',
+              message: 'Number of open tabs exceeds the allowed limit.',
+          });
+      }
+  }));
+});
+  
 
 

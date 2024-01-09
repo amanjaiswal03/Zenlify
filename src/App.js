@@ -5,6 +5,7 @@ import './App.css';
 import Dashboard from './Components/Dashboard/Dashboard';
 import Sidepanel from './Components/Sidepanel/Sidepanel';
 import BlockedWebsites from './Components/BlockedWebsites/BlockedWebsites';
+import Customize from './Components/Customize/Customize';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Sidepanel />
         <Routes>
           <Route path="/blocked-websites" element={<BlockedWebsites />} />
+          <Route path="/customize" element={<Customize />} />
           <Route path="/index.html" element={<Dashboard />} />
         </Routes>
       </Router>
