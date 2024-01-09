@@ -25,13 +25,15 @@ chrome.tabs.onActivated.addListener(activeInfo => {
   }
 });
 
+// Event listener for when a tab is removed
 chrome.tabs.onRemoved.addListener(tabId => {
   if (tabTimes[tabId]) {
     const timeSpent = Date.now() - tabTimes[tabId];
-    chrome.tabs.get(tabId, tab => {
-      saveBrowsingHistory(new URL(tab.url).hostname, timeSpent);
-    });
+    if (tabUrls[tabId]) {
+      saveBrowsingHistory(tabUrls[tabId], timeSpent);
+    }
     delete tabTimes[tabId];
+    delete tabUrls[tabId];
   }
 });
 

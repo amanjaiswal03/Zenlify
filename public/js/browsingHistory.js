@@ -6,6 +6,7 @@ const saveBrowsingHistory = (website, timeSpent) => {
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
   const existingEntry = browsingHistory.find(entry => entry.date===formattedDate && entry.website === website);
+  console.log('SAVED!!!!')
 
   let formattedTimeSpent;
 
