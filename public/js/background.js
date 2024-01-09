@@ -18,7 +18,7 @@ chrome.tabs.onActivated.addListener(activeInfo => {
     const timeSpent = Date.now() - tabTimes[tabId];
     
     chrome.tabs.get(tabId, tab => {
-      saveBrowsingHistory(new URL(tab.url).hostname, timeSpent);
+      saveBrowsingHistory(new URL(tab.url).hostname, timeSpent, true);
     });
 
     tabTimes[tabId] = Date.now();
@@ -30,7 +30,7 @@ chrome.tabs.onRemoved.addListener(tabId => {
   if (tabTimes[tabId]) {
     const timeSpent = Date.now() - tabTimes[tabId];
     if (tabUrls[tabId]) {
-      saveBrowsingHistory(tabUrls[tabId], timeSpent);
+      saveBrowsingHistory(tabUrls[tabId], timeSpent, false);
     }
     delete tabTimes[tabId];
     delete tabUrls[tabId];
@@ -53,7 +53,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       // Store the timestamp when the user enters the website
       tabTimes[tabId] = Date.now();
       if (tabUrls[tabId] !== new URL(tab.url).hostname) {
-        saveBrowsingHistory(new URL(tab.url).hostname, 0);
+        saveBrowsingHistory(new URL(tab.url).hostname, 0, true);
       }
       tabUrls[tabId] = new URL(tab.url).hostname;
     }

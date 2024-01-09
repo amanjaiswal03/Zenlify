@@ -2,7 +2,7 @@
 let browsingHistory = [];
 
 // Function to save browsing history
-const saveBrowsingHistory = (website, timeSpent) => {
+const saveBrowsingHistory = (website, timeSpent, visited) => {
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
   const existingEntry = browsingHistory.find(entry => entry.date===formattedDate && entry.website === website);
@@ -11,7 +11,7 @@ const saveBrowsingHistory = (website, timeSpent) => {
   let formattedTimeSpent;
 
   if (existingEntry) {
-    existingEntry.timesVisited++;
+    visited? existingEntry.timesVisited++ : existingEntry.timesVisited;
     existingEntry.timeSpent += timeSpent;
     existingEntry.formattedtimeSpent = formatTime(existingEntry.timeSpent);
     existingEntry.date = formattedDate;
