@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 const BrowsingStatistics = () => {
     const [browsingHistory, setBrowsingHistory] = useState([]);
     const [filterBy, setFilterBy] = useState('mostVisited');
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [date, setDate] = useState(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())).toISOString().split('T')[0]);
 
     useEffect(() => {
         filterBrowsingHistory();
