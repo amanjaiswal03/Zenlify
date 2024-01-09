@@ -2,12 +2,17 @@ import React, { useState, useEffect } from 'react';
 
 const FocusSession = () => {
     const [focusSessionData, setFocusSessionData] = useState([]);
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
     useEffect(() => {
         // Code to run on component mount
-        filterFocusSessionData(new Date().toISOString().split('T')[0]);
+        filterFocusSessionData(date);
 
-    }, []);
+    }, [date]);
+
+    const handleDateChange = (e) => {
+        setDate(e.target.value);
+    }
 
     // Function to filter focus session data by date
     
@@ -20,8 +25,9 @@ const FocusSession = () => {
         });
         console.log(date);
         //set focus session data from chrome storage
-        chrome.storage.sync.get('focusSessionData', (result) => {
-            const filteredData = result.focusSessionData?.filter(session => session.startDate === date);
+        let key = 'focusSession-' + date;
+        chrome.storage.sync.get(key, (result) => {
+            const filteredData = result[key]?.filter(session => session.startDate === date);
             // Update the focus session data state with the filtered data
             setFocusSessionData(filteredData);
         });
@@ -33,9 +39,9 @@ const FocusSession = () => {
             {/* Filter focus session data by date */}
             <input
                 type="date"
-                defaultValue={new Date().toISOString().split('T')[0]}
+                value={date}
                 max={new Date().toISOString().split('T')[0]}
-                onChange={(e) => filterFocusSessionData(e.target.value)}
+                onChange={handleDateChange}
             />
             
             <table>

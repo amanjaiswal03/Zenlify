@@ -93,7 +93,7 @@ function logAchievement(achievement) {
       achievement: achievement
     };
     focusSessionData.push(data);
-    chrome.storage.sync.set({ focusSessionData: focusSessionData }, () => {
+    chrome.storage.sync.set({ ['focusSession-'+ startDate]: focusSessionData }, () => {
       if (chrome.runtime.lastError) {
         // Handle error
         console.log(chrome.runtime.lastError.message);
