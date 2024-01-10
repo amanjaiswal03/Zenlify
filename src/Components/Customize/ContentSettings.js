@@ -19,7 +19,7 @@ function ContentSettings() {
         <div>
             <h1>Content Settings</h1>
             <label>
-                Hide recommendation widgets for youtube:
+                Hide recommendation widgets from youtube:
                 <input type="checkbox" checked={isHideWidgets} onChange={() => setIsHideWidgets(!isHideWidgets)} />
             </label>
         </div>
