@@ -10,7 +10,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["*://*.youtube.com/*"],
       "js": ["js/hideWidgets.js"]
     }
   ],
