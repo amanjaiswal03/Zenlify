@@ -5,12 +5,11 @@ import { saveBrowsingHistory } from './browsingHistory.js';
 // Event listener for when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeText({ text: 'ON' });
-  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true, maxTabs : 20, isHideWidgets: false});
+  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true, maxTabs : 20, isHideWidgets: false, blockedKeywords: []});
 });
 
 let tabTimes = {};
 let tabUrls = {};
-let maxTabs = 20;
 
 // Event listener for when a tab is activated (logs the time spent on the website)
 chrome.tabs.onActivated.addListener(activeInfo => {

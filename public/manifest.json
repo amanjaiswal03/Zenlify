@@ -12,6 +12,10 @@
     {
       "matches": ["*://*.youtube.com/*"],
       "js": ["js/hideWidgets.js"]
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/filterKeywords.js"]
     }
   ],
   "action": {
