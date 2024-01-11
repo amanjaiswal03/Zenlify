@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 function GeneralSettings() {
-    const [maxTabs, setMaxTabs] = useState(20); // Default to 10 tabs
+    const [maxTabs, setMaxTabs] = useState(); // Default to 10 tabs
+
+    useEffect(() => {
+        // Code to run on component mount
+        chrome.storage.sync.get(['maxTabs'], ({ maxTabs }) => {
+            setMaxTabs(maxTabs);
+        });
+    }, []);
 
     useEffect(() => {
          chrome.storage.sync.set({ maxTabs: maxTabs });
