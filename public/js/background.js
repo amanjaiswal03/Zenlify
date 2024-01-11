@@ -5,7 +5,7 @@ import { saveBrowsingHistory } from './browsingHistory.js';
 // Event listener for when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeText({ text: 'ON' });
-  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true, maxTabs : 20, isHideWidgets: false, blockedKeywords: []});
+  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true, maxTabs : 20, isHideWidgets: false, blockedKeywords: [], blockPopupsAndAds: false});
 });
 
 let tabTimes = {};
@@ -101,6 +101,50 @@ chrome.tabs.onCreated.addListener(() => {
           });
       }
   }));
+});
+
+//for blocking popups and ads
+chrome.storage.sync.get('blockPopupsAndAds', (result) => {
+  if (result.blockPopupsAndAds) {
+    chrome.webRequest.onBeforeRequest.addListener(
+      function(details) {
+        return {cancel: details.type === 'popup'};
+      },
+      {urls: ['<all_urls>']},
+      ['blocking']
+    );
+
+    let adUrls = [
+      "*://*.doubleclick.net/*",
+      "*://partner.googleadservices.com/*",
+      "*://*.googlesyndication.com/*",
+      "*://*.moatads.com/*",
+      "*://*.googlevideo.com/*",
+      "*://*.googleadservices.com/*",
+      "*://*pagead/*",
+      "*://*.adnxs.com/*",
+      "*://*.smartadserver.com/*",
+      "*://*.adform.net/*",
+      "*://*.serving-sys.com/*",
+      "*://*.adtechus.com/*",
+      "*://*.sascdn.com/*",
+      "*://*.adsrvr.org/*",
+      "*://*.adroll.com/*",
+      "*://*.rubiconproject.com/*",
+      "*://*.openx.net/*",
+      "*://*.pubmatic.com/*",
+      "*://*.adsafeprotected.com/*",
+      "*://*.contextweb.com/*",
+      "*://*.media.net/*",
+      "*://*.gumgum.com/*",
+      "*://*.yieldmo.com/*"
+    ];
+    chrome.webRequest.onBeforeRequest.addListener(
+      function(details) { return {cancel: true}; },
+      {urls: adUrls, types: ['main_frame', 'sub_frame', 'stylesheet', 'script', 'image', 'object', 'xmlhttprequest', 'other']},
+      ['blocking']
+    );
+  }
 });
   
 
