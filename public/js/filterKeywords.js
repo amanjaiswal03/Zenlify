@@ -35,12 +35,13 @@ chrome.storage.sync.get('blockedKeywords', function(data) {
     }
 });
 
-// 
 const observer = new MutationObserver(function() {
-    chrome.storage.sync.get('blockedKeywords', function(data) {
-        if (data.blockedKeywords) {
-            filterKeywords(data.blockedKeywords);
-        }
-    });
+    if (chrome && chrome.storage && chrome.storage.sync) {
+        chrome.storage.sync.get('blockedKeywords', function(data) {
+            if (data.blockedKeywords) {
+                filterKeywords(data.blockedKeywords);
+            }
+        });
+    }
 });
 observer.observe(document, { childList: true, subtree: true });
