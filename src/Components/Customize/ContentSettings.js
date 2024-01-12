@@ -14,8 +14,12 @@ function ContentSettings() {
 
     useEffect(() => {
         // Code to run when isHideWidgets changes
-        chrome.storage.sync.set({ isHideWidgets: isHideWidgets, blockPopupsAndAds: blockPopupsAndAds });
-    }, [isHideWidgets, blockPopupsAndAds]);
+        chrome.storage.sync.set({ isHideWidgets: isHideWidgets});
+    }, [isHideWidgets]);
+
+    useEffect(() => {
+        chrome.storage.sync.set({ blockPopupsAndAds: blockPopupsAndAds });
+    }, [blockPopupsAndAds]);
 
     return (
         <div>

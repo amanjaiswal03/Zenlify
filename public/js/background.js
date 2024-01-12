@@ -1,12 +1,18 @@
 import { timerRunning, startTimer, resetTimer, pauseTimer, sendTimer, logAchievement } from './pomodoroTimer.js';
 import { saveBrowsingHistory } from './browsingHistory.js';
+import { restStartTimer, restStopTimer } from './restTimer.js';
 
 
 // Event listener for when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeText({ text: 'ON' });
-  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true, maxTabs : 20, isHideWidgets: false, blockedKeywords: [], blockPopupsAndAds: false});
+  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true, maxTabs : 20, isHideWidgets: false, blockedKeywords: [], blockPopupsAndAds: false, isRestTimeEnabled: false, restTime: 60 });
 });
+
+let restTime = chrome.storage.sync.get('restTime', ({ restTime }) => restTime);
+
+
+// POMODORO TIMER FUNCTIONALITY
 
 let tabTimes = {};
 let tabUrls = {};
@@ -82,6 +88,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       logAchievement(msg.achievement);
       sendResponse({ status: 'success' });
       break;
+    case 'setRestTimer':
+      restTime = msg.restTime;
+      restStopTimer();
+      restStartTimer(restTime);
+      break;
+    case 'clearRestTimer':
+      restStopTimer();
+      break;
     default:
       console.error('Unrecognized command');
   }
@@ -103,7 +117,8 @@ chrome.tabs.onCreated.addListener(() => {
   }));
 });
 
-//for blocking popups and ads
+//BLOCKING POPUPS AND ADS FUNCTIONALITY
+
 chrome.storage.sync.get('blockPopupsAndAds', (result) => {
   if (result.blockPopupsAndAds) {
     chrome.webRequest.onBeforeRequest.addListener(
@@ -146,6 +161,25 @@ chrome.storage.sync.get('blockPopupsAndAds', (result) => {
     );
   }
 });
+
+
+// REST TIMER FUNCTIONALITY
+
+
+// Listen for changes in the active window
+chrome.windows.onFocusChanged.addListener((windowId) => {
+  chrome.storage.sync.get('isRestTimeEnabled', ({ isRestTimeEnabled }) => {
+    if (isRestTimeEnabled) { 
+          if (windowId === chrome.windows.WINDOW_ID_NONE) {
+              restStopTimer();
+          } else {
+              restStartTimer(restTime);
+          }
+    }
+  });
+});
+
+
   
 
 
