@@ -178,6 +178,26 @@
         "condition": {
           "urlFilter": "*://*.gumgum.com/*"
         }
+      },
+      {
+        "id": 19,
+        "priority": 1,
+        "action": {
+          "type": "block"
+        },
+        "condition": {
+          "urlFilter": "*://*pagead/*"
+        }
+      },
+      {
+        "id": 20,
+        "priority": 1,
+        "action": {
+          "type": "block"
+        },
+        "condition": {
+          "urlFilter": "*://*ads?*"
+        }
       }
     
 ]
