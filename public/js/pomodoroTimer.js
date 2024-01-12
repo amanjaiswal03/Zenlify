@@ -14,7 +14,6 @@ let endTime;
 let startTime;
 let totalTimeElapsed;
 
-
 // Function to start the timer
 function startTimer(newPomodoroDuration = pomodoroDuration, newBreakDuration = breakDuration) {
     pomodoroDuration = newPomodoroDuration;
@@ -119,35 +118,38 @@ function sendTimer() {
 
 // Function to display a notification when the timer is finished
 function displayNotification() {
-  const buttonTitle = onBreak ? 'Start Break' : 'Finish session';
-  chrome.notifications.create('pomodoroNotification', {
-    type: 'basic',
-    iconUrl: '../images/zenlify_logo.png',
-    title: onBreak ? 'Take a break!' : 'The pomodoro session is over!',
-    message: onBreak ? 'Take a break!' : 'The pomodoro session is over!',
-    buttons: [
-      { title: buttonTitle }
-    ],
-    requireInteraction: true, // Prevent the notification from disappearing until the user clicks on the button
-    priority: 2
-  }, (notificationId) => {
-    // Event listener for when the notification button is clicked
-    chrome.notifications.onButtonClicked.addListener((clickedNotificationId, buttonIndex) => {
-      if (clickedNotificationId === notificationId && buttonIndex === 0) {
-        if (!onBreak) {
-          // Handle "Finish Timer" button click
-          resetTimer();
-          
-        } else {
-          // Handle "Start Break" button click
-          openInputPage();
-          startTimer();
+
+  chrome.storage.sync.get(['pomodoroNotificationMessage', 'breakNotificationMessage'], (result) => {
+    const buttonTitle = onBreak ? 'Start Break' : 'Finish session';
+    chrome.notifications.create('pomodoroNotification', {
+      type: 'basic',
+      iconUrl: '../images/zenlify_logo.png',
+      title: 'Pomodoro Timer',
+      message: onBreak ? result.pomodoroNotificationMessage : result.breakNotificationMessage,
+      buttons: [
+        { title: buttonTitle }
+      ],
+      requireInteraction: true, // Prevent the notification from disappearing until the user clicks on the button
+      priority: 2
+    }, (notificationId) => {
+      // Event listener for when the notification button is clicked
+      chrome.notifications.onButtonClicked.addListener((clickedNotificationId, buttonIndex) => {
+        if (clickedNotificationId === notificationId && buttonIndex === 0) {
+          if (!onBreak) {
+            // Handle "Finish Timer" button click
+            resetTimer();
+            
+          } else {
+            // Handle "Start Break" button click
+            openInputPage();
+            startTimer();
+          }
         }
-      }
+      });
     });
   });
 }
 
 
 //export this to background.js
-export {pomodoroDuration, breakDuration, timerRunning, startTimer, resetTimer, pauseTimer, logAchievement, sendTimer};
+export {timerRunning, startTimer, resetTimer, pauseTimer, logAchievement, sendTimer};
