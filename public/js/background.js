@@ -9,7 +9,7 @@ let tabUrls = {}; // Stores the url of the website the user is currently on
 // Event listener for when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeText({ text: 'ON' });
-  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true, maxTabs : 20, isHideWidgets: false, blockedKeywords: [], blockPopupsAndAds: false });
+  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true, maxTabs : 20, isHideWidgets: false, blockedKeywords: [], blockAds: false });
   chrome.storage.sync.set({ pomodoroNotificationMessage: 'Your pomodoro session is over, take a well deserved break!', breakNotificationMessage: 'Your break is over, start a new session!' })
 });
 
@@ -105,49 +105,30 @@ chrome.tabs.onCreated.addListener(() => {
   }));
 });
 
-//for blocking popups and ads
-chrome.storage.sync.get('blockPopupsAndAds', (result) => {
-  if (result.blockPopupsAndAds) {
-    chrome.webRequest.onBeforeRequest.addListener(
-      function(details) {
-        return {cancel: details.type === 'popup'};
-      },
-      {urls: ['<all_urls>']},
-      ['blocking']
-    );
+// Function to fetch and update rules for blocking popups and ads
+function updateBlockAdsRules() {
+  fetch('../rules/blockAds.json')
+    .then(response => response.json())
+    .then(rules => {
+      const ruleIds = rules.map(rule => rule.id);
 
-    let adUrls = [
-      "*://*.doubleclick.net/*",
-      "*://partner.googleadservices.com/*",
-      "*://*.googlesyndication.com/*",
-      "*://*.moatads.com/*",
-      "*://*.googlevideo.com/*",
-      "*://*.googleadservices.com/*",
-      "*://*pagead/*",
-      "*://*.adnxs.com/*",
-      "*://*.smartadserver.com/*",
-      "*://*.adform.net/*",
-      "*://*.serving-sys.com/*",
-      "*://*.adtechus.com/*",
-      "*://*.sascdn.com/*",
-      "*://*.adsrvr.org/*",
-      "*://*.adroll.com/*",
-      "*://*.rubiconproject.com/*",
-      "*://*.openx.net/*",
-      "*://*.pubmatic.com/*",
-      "*://*.adsafeprotected.com/*",
-      "*://*.contextweb.com/*",
-      "*://*.media.net/*",
-      "*://*.gumgum.com/*",
-      "*://*.yieldmo.com/*"
-    ];
-    chrome.webRequest.onBeforeRequest.addListener(
-      function(details) { return {cancel: true}; },
-      {urls: adUrls, types: ['main_frame', 'sub_frame', 'stylesheet', 'script', 'image', 'object', 'xmlhttprequest', 'other']},
-      ['blocking']
-    );
+      chrome.storage.sync.get('blockAds', function(result) {
+        if (result.blockAds) {
+          chrome.declarativeNetRequest.updateDynamicRules({
+            addRules: rules
+          });
+        } else {
+          chrome.declarativeNetRequest.updateDynamicRules({
+            removeRuleIds: ruleIds
+          });
+        }
+      });
+    });
+}
+
+// Event listener for changes in chrome storage
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+  if (changes.blockAds) {
+    updateBlockAdsRules();
   }
 });
-  
-
-

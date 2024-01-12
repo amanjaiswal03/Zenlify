@@ -5,6 +5,9 @@ const widgetSelectors = [
     '[id^="google_ads_"]', // Google ads
     '[id^="div-gpt-ad"]', // Google Publisher Tag ads
     '.ytd-display-ad-renderer', // YouTube ads
+    '.yrs-ad-slot-renderer', // YouTube ads
+    '.ytd-in-feed-ad-layout-renderer', // YouTube ads
+
     // Add more selectors as needed
 ];
 
