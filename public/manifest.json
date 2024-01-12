@@ -8,10 +8,20 @@
     "service_worker": "js/background.js",
     "type": "module"
   },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["js/hideWidgets.js"]
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/filterKeywords.js"]
+    }
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": "images/zenlify_logo.png"
   },
-  "permissions": ["alarms", "tabs", "storage", "activeTab", "notifications"],
+  "permissions": ["alarms", "tabs", "storage", "activeTab", "notifications", "scripting"],
   "host_permissions": ["<all_urls>"]
 }

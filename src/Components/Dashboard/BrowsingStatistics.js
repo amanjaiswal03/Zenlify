@@ -20,6 +20,9 @@ const BrowsingStatistics = () => {
         setDate(e.target.value);
     };
 
+    // Function to format time in HH:MM:SS format
+    
+
     
 
      // Function to filter browsing history by date
