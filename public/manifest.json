@@ -22,6 +22,8 @@
     "default_popup": "popup.html",
     "default_icon": "images/zenlify_logo.png"
   },
-  "permissions": ["alarms", "tabs", "storage", "activeTab", "notifications", "scripting"],
+  "permissions": ["alarms", "tabs", "storage", "activeTab", "notifications", "scripting","declarativeNetRequest",
+  "declarativeNetRequestFeedback"],
+
   "host_permissions": ["<all_urls>"]
 }
