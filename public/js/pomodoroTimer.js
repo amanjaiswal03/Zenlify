@@ -152,4 +152,4 @@ function displayNotification() {
 
 
 //export this to background.js
-export {pomodoroDuration, breakDuration, timerRunning, startTimer, resetTimer, pauseTimer, logAchievement, sendTimer};
+export {timerRunning, startTimer, resetTimer, pauseTimer, logAchievement, sendTimer};
