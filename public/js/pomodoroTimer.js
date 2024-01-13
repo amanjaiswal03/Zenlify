@@ -13,6 +13,7 @@ let startDate;
 let endTime;
 let startTime;
 let totalTimeElapsed;
+let timezone;
 
 // Function to start the timer
 function startTimer(newPomodoroDuration = pomodoroDuration, newBreakDuration = breakDuration) {
@@ -75,6 +76,7 @@ function openInputPage() {
     endTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     startTime = new Date(new Date().getTime() - (pomodoroDuration * 1000)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     totalTimeElapsed = new Date(pomodoroDuration * 1000).toISOString().slice(11, 19);
+    timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+)/)[1];
 }
 
 // Function to log the achievement
@@ -89,7 +91,8 @@ function logAchievement(achievement) {
       startTime: startTime,
       endTime: endTime,
       totalTimeElapsed: totalTimeElapsed,
-      achievement: achievement
+      achievement: achievement,
+      timezone: timezone
     };
     focusSessionData.push(data);
     chrome.storage.sync.set({ ['focusSession-'+ startDate]: focusSessionData }, () => {
