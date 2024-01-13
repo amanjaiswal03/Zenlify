@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CalendarSync from './CalendarSync';
 
 const FocusSession = () => {
     const [focusSessionData, setFocusSessionData] = useState([]);
@@ -37,6 +38,7 @@ const FocusSession = () => {
         <div id = "focus-sessions">
             <h1>Focus session history </h1>
             {/* Filter focus session data by date */}
+            <CalendarSync />
             <input
                 type="date"
                 value={date}
