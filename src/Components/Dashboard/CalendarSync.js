@@ -1,8 +1,42 @@
-import React, {useState} from 'react';
-
-
+import React, {useEffect, useState} from 'react';
 const moment = require('moment-timezone');
+
 const CalendarSync = () => {
+    const [googleSync, setGoogleSync] = useState();
+
+    useEffect(() => {
+        chrome.storage.sync.get('googleSync', function(result) {
+            setGoogleSync(result.googleSync);
+        });
+    }, []);
+
+    useEffect(() => {
+        chrome.storage.sync.set({ googleSync: googleSync });
+    }, [googleSync]);
+
+    function startSync(){
+        //set chrome storage googleSync key to true
+        setGoogleSync(true);
+        addFocusSessionToCalendar();
+    }
+
+    function stopSync(){
+        //set chrome storage googleSync key to false
+        setGoogleSync(false);
+        // remove cached auth token
+        chrome.identity.getAuthToken({ 'interactive': false }, function(token) {
+            if (token) {
+                // remove the token from the cache
+                chrome.identity.removeCachedAuthToken({ 'token': token }, function() {
+                    // revoke the token
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', 'https://accounts.google.com/o/oauth2/revoke?token=' + token);
+                    xhr.send();
+                    console.log('Token revoked and removed.');
+                });
+            }
+        });
+    }
 
     function addFocusSessionToCalendar() {
         chrome.identity.getAuthToken({ 'interactive': true }, function(token) {
@@ -74,14 +108,15 @@ const CalendarSync = () => {
                     });
                 });
             });
-            //set chrome storage googleSync key to true
-            chrome.storage.sync.set({ googleSync: true });
+            
         });
     }
 
 
     return (
-        <button onClick={addFocusSessionToCalendar}>Sync with google calendar</button>
+        <button onClick={googleSync ? stopSync : startSync}>
+            {googleSync ? "Stop syncing to google calendar" : "Sync with google calendar"}
+        </button>
     );
 };
 
