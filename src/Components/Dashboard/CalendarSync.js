@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 
+
+const moment = require('moment-timezone');
 const CalendarSync = () => {
 
     function addFocusSessionToCalendar() {
@@ -12,33 +14,28 @@ const CalendarSync = () => {
                 const focusSessionKeys = Object.keys(items).filter(key => key.startsWith('focusSession-'));
                 const focusSessionValues = focusSessionKeys.map(key => items[key]);
                 console.log(focusSessionValues);
-                focusSessionValues.forEach(sessions => {
-                    sessions.forEach(session => {
-                        console.log(session.startDate);
-    
-                        // convert session.startDate from "January 6, 2024" to "2024-01-06"
-                        const startDate = new Date(session.startDate).toISOString().split('T')[0];
-                        const startTime = session.startTime.split(' ')[0] + ':00+01:00';
-                        const endTime = session.endTime.split(' ')[0] + ':00+01:00';
-
-
-                        const startDateTime = `${startDate}T${startTime}`;
-                        const endDateTime = `${startDate}T${endTime}`;
-                        
+                focusSessionValues?.forEach(sessions => {
+                    sessions?.forEach(session => {
+                        //convert session.startDateTime from "2024-01-14T11:21:44.544Z" to "2024-01-14T11:21:44+08:00"
+                        console.log(session.endDateTime);
+                        console.log(session.startDateTime);
+                        const startDateTime = moment(session.startDateTime).tz(session.timezone).format();
+                        const endDateTime = moment(session.endDateTime).tz(session.timezone).format();
+                        console.log(endDateTime);
                         const event = {
                             'summary': 'Focus Session',
                             'description': session.achievement,
                             'start': {
                                 'dateTime': startDateTime,
-                                'timeZone': 'America/Los_Angeles',
+                                'timeZone': session.timezone,
                             },
                             'end': {
                                 'dateTime': endDateTime,
-                                'timeZone': 'America/Los_Angeles',
+                                'timeZone': session.timezone,
                             }
                         };
-                        const timeMin = encodeURIComponent(event.start.dateTime);
-                        const timeMax = encodeURIComponent(event.end.dateTime);
+                        const timeMin = encodeURIComponent(startDateTime);
+                        const timeMax = encodeURIComponent(endDateTime);
 
                         fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}`, {
                             method: 'GET',
@@ -81,6 +78,7 @@ const CalendarSync = () => {
             chrome.storage.sync.set({ googleSync: true });
         });
     }
+
 
     return (
         <button onClick={addFocusSessionToCalendar}>Sync with google calendar</button>

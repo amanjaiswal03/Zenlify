@@ -9,6 +9,8 @@ let pomodoroDuration = 25 * 60; // default Pomodoro duration
 let breakDuration = 5 * 60; // default break duration
 let isPaused = false;
 let pausedTime = 0;
+let startDateTime;
+let endDateTime;
 let startDate;
 let endTime;
 let startTime;
@@ -71,22 +73,33 @@ function pauseTimer() {
 
 //function to open achievement input page
 function openInputPage() {
-    chrome.windows.create({ url: 'input.html', type: 'popup', width: 500, height: 600 });
-    startDate = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });;
-    endTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    startTime = new Date(new Date().getTime() - (pomodoroDuration * 1000)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    totalTimeElapsed = new Date(pomodoroDuration * 1000).toISOString().slice(11, 19);
-    timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+)/)[1];
+  chrome.windows.create({ url: 'input.html', type: 'popup', width: 500, height: 600 });
+  startDateTime = new Date(new Date().getTime() - (pomodoroDuration * 1000)).toISOString();
+  endDateTime = new Date().toISOString();
+  startDate = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });;
+  endTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  startTime = new Date(new Date().getTime() - (pomodoroDuration * 1000)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  totalTimeElapsed = new Date(pomodoroDuration * 1000).toISOString().slice(11, 19);
+  timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  console.log(timezone);
+  chrome.storage.sync.get(`focusSession-${startDate}`, (result) => {
+    console.log(result);
+  });
 }
 
 // Function to log the achievement
 function logAchievement(achievement) {
   
   // Save the data to Chrome storage
-  chrome.storage.sync.get('focusSessionData', (result) => {
-    let focusSessionData = Array.isArray(result.focusSessionData) ? result.focusSessionData : [];
+  chrome.storage.sync.get(`focusSession-${startDate}`, (result) => {
+    // check if result has the key if so access it
+    // if not create a new array
+    const focusSessionData = result[`focusSession-${startDate}`] || [];
+    console.log(focusSessionData);
     
     const data = {
+      startDateTime: startDateTime,
+      endDateTime: endDateTime,
       startDate: startDate,
       startTime: startTime,
       endTime: endTime,
@@ -94,6 +107,7 @@ function logAchievement(achievement) {
       achievement: achievement,
       timezone: timezone
     };
+    console.log(data);
     focusSessionData.push(data);
     chrome.storage.sync.set({ ['focusSession-'+ startDate]: focusSessionData }, () => {
       if (chrome.runtime.lastError) {
