@@ -18,12 +18,17 @@
       "js": ["js/filterKeywords.js"]
     }
   ],
+  "oauth2": {
+    "client_id": "69867943671-h264079bij24nahe9fl6sv8gh99u66am.apps.googleusercontent.com",
+    "scopes":["https://www.googleapis.com/auth/calendar"]
+  },
+
   "action": {
     "default_popup": "popup.html",
     "default_icon": "images/zenlify_logo.png"
   },
   "permissions": ["alarms", "tabs", "storage", "activeTab", "notifications", "scripting","declarativeNetRequest",
-  "declarativeNetRequestFeedback"],
+  "declarativeNetRequestFeedback", "identity"],
 
   "host_permissions": ["<all_urls>"]
 }
