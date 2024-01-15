@@ -15,7 +15,7 @@ let startDate;
 let endTime;
 let startTime;
 let totalTimeElapsed;
-let timezone;
+let timezoneArea;
 
 // Function to start the timer
 function startTimer(newPomodoroDuration = pomodoroDuration, newBreakDuration = breakDuration) {
@@ -74,13 +74,21 @@ function pauseTimer() {
 //function to open achievement input page
 function openInputPage() {
   chrome.windows.create({ url: 'input.html', type: 'popup', width: 500, height: 600 });
-  startDateTime = new Date(new Date().getTime() - (pomodoroDuration * 1000)).toISOString();
-  endDateTime = new Date().toISOString();
+  
+  const timezoneOffset = - new Date().getTimezoneOffset();
+  const timezoneHour = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, '0');
+  const timezoneMinute = String(Math.abs(timezoneOffset) % 60).padStart(2, '0');
+  const timezoneSign = timezoneOffset < 0 ? '-' : '+';
+  const timezone = `${timezoneSign}${timezoneHour}:${timezoneMinute}`;
+
+
+  startDateTime = new Date(new Date().getTime() - (pomodoroDuration * 1000) + timezoneOffset * 60 * 1000).toISOString().split('.')[0] + timezone;
+  endDateTime = new Date(new Date().getTime() + timezoneOffset * 60 * 1000).toISOString().split('.')[0] + timezone;
   startDate = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });;
   endTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   startTime = new Date(new Date().getTime() - (pomodoroDuration * 1000)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   totalTimeElapsed = new Date(pomodoroDuration * 1000).toISOString().slice(11, 19);
-  timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  timezoneArea = Intl.DateTimeFormat().resolvedOptions().timeZone;
   console.log(timezone);
   chrome.storage.sync.get(`focusSession-${startDate}`, (result) => {
     console.log(result);
@@ -105,7 +113,7 @@ function logAchievement(achievement) {
       endTime: endTime,
       totalTimeElapsed: totalTimeElapsed,
       achievement: achievement,
-      timezone: timezone
+      timezoneArea: timezoneArea
     };
     console.log(data);
     focusSessionData.push(data);
@@ -114,10 +122,50 @@ function logAchievement(achievement) {
         // Handle error
         console.log(chrome.runtime.lastError.message);
       } else {
+        chrome.storage.sync.get('googleSync', function(result) {
+          if (result.googleSync) {
+            addFocusSessionToCalendar(data);
+          }
+        });
         console.log('Achievement data saved to Chrome storage.');
       }
     });
   })
+}
+
+function addFocusSessionToCalendar(session) {
+  chrome.identity.getAuthToken({ 'interactive': true }, function(token) {
+    if (chrome.runtime.lastError) {
+      console.log(chrome.runtime.lastError);
+      return;
+    }
+
+    const event = {
+      'summary': 'Focus Session',
+      'description': session.achievement,
+      'start': {
+        'dateTime': session.startDateTime,
+        'timeZone': session.timezoneArea,
+      },
+      'end': {
+        'dateTime': session.endDateTime,
+        'timeZone': session.timezoneArea,
+      },
+    };
+    fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+      method: 'POST',
+      headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(event)
+    }).then(response => response.json())
+    .then(data => {
+        console.log('Event created: ' + data.htmlLink);
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
 }
 
 

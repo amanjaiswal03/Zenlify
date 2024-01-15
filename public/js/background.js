@@ -2,6 +2,7 @@ import { timerRunning, startTimer, resetTimer, pauseTimer, sendTimer, logAchieve
 import { saveBrowsingHistory } from './browsingHistory.js';
 
 
+
 let tabTimes = {}; // Stores the timestamp when the user enters a website
 let tabUrls = {}; // Stores the url of the website the user is currently on
 

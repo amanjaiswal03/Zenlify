@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-const moment = require('moment-timezone');
 
 const CalendarSync = () => {
     const [googleSync, setGoogleSync] = useState();
@@ -50,26 +49,21 @@ const CalendarSync = () => {
                 console.log(focusSessionValues);
                 focusSessionValues?.forEach(sessions => {
                     sessions?.forEach(session => {
-                        //convert session.startDateTime from "2024-01-14T11:21:44.544Z" to "2024-01-14T11:21:44+08:00"
-                        console.log(session.endDateTime);
-                        console.log(session.startDateTime);
-                        const startDateTime = moment(session.startDateTime).tz(session.timezone).format();
-                        const endDateTime = moment(session.endDateTime).tz(session.timezone).format();
-                        console.log(endDateTime);
+                        
                         const event = {
                             'summary': 'Focus Session',
                             'description': session.achievement,
                             'start': {
-                                'dateTime': startDateTime,
-                                'timeZone': session.timezone,
+                                'dateTime': session.startDateTime,
+                                'timeZone': session.timezoneArea,
                             },
                             'end': {
-                                'dateTime': endDateTime,
-                                'timeZone': session.timezone,
+                                'dateTime': session.endDateTime,
+                                'timeZone': session.timezoneArea,
                             }
                         };
-                        const timeMin = encodeURIComponent(startDateTime);
-                        const timeMax = encodeURIComponent(endDateTime);
+                        const timeMin = encodeURIComponent(session.startDateTime);
+                        const timeMax = encodeURIComponent(session.endDateTime);
 
                         fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}`, {
                             method: 'GET',
