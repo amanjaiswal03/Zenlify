@@ -5,6 +5,11 @@ const BrowsingStatistics = () => {
     const [filterBy, setFilterBy] = useState('mostVisited');
     const [date, setDate] = useState(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())).toISOString().split('T')[0]);
 
+    // Get browsing history on component mount
+    useEffect(() => {
+        filterBrowsingHistory();
+    }, []);
+
     useEffect(() => {
         filterBrowsingHistory();
     }, [date, filterBy]);
