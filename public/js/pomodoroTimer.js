@@ -181,6 +181,8 @@ function sendTimer() {
   });
 }
 
+
+
 // Function to display a notification when the timer is finished
 function displayNotification() {
 
@@ -196,25 +198,10 @@ function displayNotification() {
       ],
       requireInteraction: true, // Prevent the notification from disappearing until the user clicks on the button
       priority: 2
-    }, (notificationId) => {
-      // Event listener for when the notification button is clicked
-      chrome.notifications.onButtonClicked.addListener((clickedNotificationId, buttonIndex) => {
-        if (clickedNotificationId === notificationId && buttonIndex === 0) {
-          if (!onBreak) {
-            // Handle "Finish Timer" button click
-            resetTimer();
-            
-          } else {
-            // Handle "Start Break" button click
-            openInputPage();
-            startTimer();
-          }
-        }
-      });
     });
   });
 }
 
 
 //export this to background.js
-export {timerRunning, startTimer, resetTimer, pauseTimer, logAchievement, sendTimer};
+export {timerRunning, onBreak, startTimer, resetTimer, pauseTimer, logAchievement, sendTimer, openInputPage};

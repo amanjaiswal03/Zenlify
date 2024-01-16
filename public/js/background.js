@@ -1,4 +1,4 @@
-import { timerRunning, startTimer, resetTimer, pauseTimer, sendTimer, logAchievement } from './pomodoroTimer.js';
+import { onBreak, timerRunning, startTimer, resetTimer, pauseTimer, sendTimer, logAchievement, openInputPage } from './pomodoroTimer.js';
 import { saveBrowsingHistory } from './browsingHistory.js';
 
 
@@ -61,6 +61,21 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       tabUrls[tabId] = new URL(tab.url).hostname;
     }
   });
+});
+
+// Event listener for when the notification button is clicked
+chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+  if (notificationId === 'pomodoroNotification' && buttonIndex === 0) {
+    if (!onBreak) {
+      // Handle "Finish Timer" button click
+      resetTimer();
+      
+    } else {
+      // Handle "Start Break" button click
+      openInputPage();
+      startTimer();
+    }
+  }
 });
 
 // Event listener for messages from the pomodoro timer
