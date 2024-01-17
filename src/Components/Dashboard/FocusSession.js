@@ -5,6 +5,7 @@ const FocusSession = () => {
     const [focusSessionData, setFocusSessionData] = useState([]);
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
+
     useEffect(() => {
         // Code to run on component mount
         filterFocusSessionData(date);
@@ -19,19 +20,46 @@ const FocusSession = () => {
     
     const filterFocusSessionData = (date) => {
         //convert date to string and in the format "January 6, 2024"
-        date = new Date(date).toLocaleDateString('en-US', {
+        let filteredDate = new Date(date).toLocaleDateString('en-US', {
             month: 'long',
             day: 'numeric',
             year: 'numeric',
         });
-        console.log(date);
-        //set focus session data from chrome storage
-        let key = 'focusSession-' + date;
-        chrome.storage.sync.get(key, (result) => {
-            const filteredData = result[key]?.filter(session => session.startDate === date);
-            // Update the focus session data state with the filtered data
-            setFocusSessionData(filteredData);
-        });
+        console.log(filteredDate);
+
+        const openRequest = indexedDB.open('focusSessionHistoryDB', 1);
+        openRequest.onupgradeneeded = function(e) {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('focusSessionHistory')) {
+              db.createObjectStore('focusSessionHistory', { keyPath: 'startDate' });
+            }
+        };
+        openRequest.onsuccess = function (event) {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('focusSessionHistory')) {
+                console.log(`No object store: focusSessionHistory`);
+                return;
+            }
+            const transaction = db.transaction(['focusSessionHistory'], 'readwrite');
+            const objectStore = transaction.objectStore('focusSessionHistory');
+
+
+            const request = objectStore.getAll(IDBKeyRange.only(filteredDate));
+            console.log(request);
+
+            request.onsuccess = function (event) {
+                console.log(event);
+                let data = event.target.result;
+
+                console.log(data);
+                if (data) {
+                    setFocusSessionData(data);
+                } else {
+                    setFocusSessionData([]);
+                }
+            };
+        };
+        
     };
 
     return (

@@ -97,14 +97,25 @@ function openInputPage() {
 
 // Function to log the achievement
 function logAchievement(achievement) {
-  
-  // Save the data to Chrome storage
-  chrome.storage.sync.get(`focusSession-${startDate}`, (result) => {
-    // check if result has the key if so access it
-    // if not create a new array
-    const focusSessionData = result[`focusSession-${startDate}`] || [];
-    console.log(focusSessionData);
-    
+
+  // Open or create the database
+  const openRequest = indexedDB.open("focusSessionHistoryDB", 1);
+
+  openRequest.onupgradeneeded = function(e) {
+    const db = e.target.result;
+    if (!db.objectStoreNames.contains('focusSessionHistory')) {
+      db.createObjectStore('focusSessionHistory', { keyPath: 'startDate' });
+    }
+  };
+
+  openRequest.onsuccess = function(e) {
+    const db = e.target.result;
+    if (!db.objectStoreNames.contains('focusSessionHistory')) {
+      console.log(`No object store: focusSessionHistory`);
+      return;
+    }
+    const transaction = db.transaction(['focusSessionHistory'], 'readwrite');
+    const objectStore = transaction.objectStore('focusSessionHistory');
     const data = {
       startDateTime: startDateTime,
       endDateTime: endDateTime,
@@ -115,23 +126,22 @@ function logAchievement(achievement) {
       achievement: achievement,
       timezoneArea: timezoneArea
     };
-    console.log(data);
-    focusSessionData.push(data);
-    chrome.storage.sync.set({ ['focusSession-'+ startDate]: focusSessionData }, () => {
-      if (chrome.runtime.lastError) {
-        // Handle error
-        console.log(chrome.runtime.lastError.message);
-      } else {
-        chrome.storage.sync.get('googleSync', function(result) {
-          if (result.googleSync) {
-            addFocusSessionToCalendar(data);
-          }
-        });
-        console.log('Achievement data saved to Chrome storage.');
-      }
-    });
-  })
-}
+    objectStore.add(data);
+
+    transaction.oncomplete = function() {
+      console.log("All data has been saved to IndexedDB");
+      chrome.storage.sync.get('googleSync', function(result) {
+        if (result.googleSync) {
+          addFocusSessionToCalendar(data);
+        }
+      });
+    };
+  };
+
+  openRequest.onerror = function(e) {
+    console.log("Error", e.target.error.name);
+  };
+};
 
 function addFocusSessionToCalendar(session) {
   chrome.identity.getAuthToken({ 'interactive': true }, function(token) {

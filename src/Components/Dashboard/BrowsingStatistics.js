@@ -5,10 +5,6 @@ const BrowsingStatistics = () => {
     const [filterBy, setFilterBy] = useState('mostVisited');
     const [date, setDate] = useState(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())).toISOString().split('T')[0]);
 
-    // Get browsing history on component mount
-    useEffect(() => {
-        filterBrowsingHistory();
-    }, []);
 
     useEffect(() => {
         filterBrowsingHistory();
@@ -33,8 +29,18 @@ const BrowsingStatistics = () => {
 
         // Get browsing history from IndexedDB
         const openRequest = indexedDB.open("browsingHistoryDB", 1);
+        openRequest.onupgradeneeded = function(e) {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('browsingHistory')) {
+              db.createObjectStore('browsingHistory', { keyPath: ['formattedDate', 'website'] });
+            }
+        };
         openRequest.onsuccess = function(event) {
             const db = event.target.result;
+            if (!db.objectStoreNames.contains('browsingHistory')) {
+                console.log(`No object store: browsingHistory`);
+                return;
+            }
             const transaction = db.transaction(['browsingHistory'], "readwrite");
             const objectStore = transaction.objectStore('browsingHistory');
 
