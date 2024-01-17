@@ -1,6 +1,4 @@
-// src/App.js
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
 import './App.css';
 import Dashboard from './Components/Dashboard/Dashboard';
 import Sidepanel from './Components/Sidepanel/Sidepanel';
@@ -9,17 +7,25 @@ import Customize from './Components/Customize/Customize';
 import Notifications from './Components/Notifications/Notifications';
 
 function App() {
+  const [page, setPage] = useState('dashboard');
+
+  const renderPage = () => {
+    switch(page) {
+      case 'blocked-websites':
+        return <BlockedWebsites />;
+      case 'customize':
+        return <Customize />;
+      case 'notifications':
+        return <Notifications />;
+      default:
+        return <Dashboard />;
+    }
+  }
+
   return (
     <div className="App">
-      <Router>
-        <Sidepanel />
-        <Routes>
-          <Route path="/blocked-websites" element={<BlockedWebsites />} />
-          <Route path="/customize" element={<Customize />} />
-          <Route path="/index.html" element={<Dashboard />} />
-          <Route path= "/notifications" element={<Notifications />} />
-        </Routes>
-      </Router>
+      <Sidepanel setPage={setPage} />
+      {renderPage()}
     </div>
   );
 }

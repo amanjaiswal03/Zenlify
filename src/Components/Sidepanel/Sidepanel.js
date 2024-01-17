@@ -1,25 +1,20 @@
-import React from "react";
-import { Link, useLocation} from "react-router-dom";
+import React, { useState } from 'react';
 
+function Sidepanel({ setPage }) {
+    const [activePage, setActivePage] = useState('dashboard');
 
-function Sidepanel() {
-    const location = useLocation();
+    const handleOptionClick = (page) => {
+        setPage(page);
+        setActivePage(page);
+    }
 
     return (
         <div className="sidepanel">
             <ul>
-                <li className={location.pathname === "/index.html" ? "active" : ""}>
-                    <Link to="/index.html">Dashboard</Link>
-                </li>
-                <li className={location.pathname === "/blocked-websites" ? "active" : ""}>
-                    <Link to="/blocked-websites">Blocked websites</Link>
-                </li>
-                <li className={location.pathname === "/customize" ? "active" : ""}>
-                    <Link to="/customize">Customize</Link>
-                </li>
-                <li className={location.pathname === "/notifications" ? "active" : ""}>
-                    <Link to="/notifications">Notifications</Link>
-                </li>
+                <li><a className={activePage === 'dashboard' ? 'active' : ''} onClick={() => handleOptionClick('dashboard')}>Dashboard</a></li>
+                <li><a className={activePage === 'blocked-websites' ? 'active' : ''} onClick={() => handleOptionClick('blocked-websites')}>Blocked Websites</a></li>
+                <li><a className={activePage === 'customize' ? 'active' : ''} onClick={() => handleOptionClick('customize')}>Customize</a></li>
+                <li><a className={activePage === 'notifications' ? 'active' : ''} onClick={() => handleOptionClick('notifications')}>Notifications</a></li>
             </ul>
         </div>
     );
