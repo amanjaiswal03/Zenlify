@@ -1,26 +1,66 @@
-// Define an array to store browsing history
-let browsingHistory = [];
-
-// Function to save browsing history
 const saveBrowsingHistory = (website, timeSpent, visited) => {
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
-  const existingEntry = browsingHistory.find(entry => entry.date===formattedDate && entry.website === website);
-  console.log('SAVED!!!!')
+  const formattedTimeSpent = timeSpent ? formatTime(timeSpent) : "00:00:00";
 
-  let formattedTimeSpent;
+  // Open or create the database
+const openRequest = indexedDB.open("browsingHistoryDB", 1);
 
-  if (existingEntry) {
-    visited? existingEntry.timesVisited++ : existingEntry.timesVisited;
-    existingEntry.timeSpent += timeSpent;
-    existingEntry.formattedtimeSpent = formatTime(existingEntry.timeSpent);
-    existingEntry.date = formattedDate;
-  } else {
-    browsingHistory.push({ website, timesVisited: 1, timeSpent, formattedTimeSpent, date: formattedDate });
+openRequest.onupgradeneeded = function(e) {
+  const db = e.target.result;
+  if (!db.objectStoreNames.contains('browsingHistory')) {
+    db.createObjectStore('browsingHistory', { keyPath: ['formattedDate', 'website'] });
   }
+};
 
-  // Save browsing history to chrome storage
-  chrome.storage.sync.set({ ['browsingHistory-'+ formattedDate]: browsingHistory });
+openRequest.onsuccess = function(e) {
+  const db = e.target.result;
+  const transaction = db.transaction(['browsingHistory'], 'readwrite');
+  const objectStore = transaction.objectStore('browsingHistory');
+  let matched = false;
+  
+  const request = objectStore.getAll(IDBKeyRange.only([formattedDate, website]));
+
+  request.onsuccess = function(event) {
+    console.log(event);
+    const results = event.target.result;
+    console.log(results);
+
+    // Perform operations on the results
+    results.forEach(data => {
+      if (data.website === website) {
+        matched = true;
+        // Update the time spent on the website
+        if (visited) {
+          data.timesVisited++;
+        }
+        data.timeSpent += timeSpent;
+        data.formattedTimeSpent = formatTime(data.timeSpent);
+        objectStore.put(data);
+        console.log("matched")
+      }  
+    });
+    if (!matched) {
+      // Add the new website to the database
+      const data = {
+        website: website,
+        timesVisited: 1,
+        timeSpent: timeSpent,
+        formattedTimeSpent: formattedTimeSpent,
+        formattedDate: formattedDate
+      };
+      objectStore.add(data);
+    }
+  };
+
+  transaction.oncomplete = function() {
+    console.log("All data has been saved to IndexedDB");
+  };
+};
+
+openRequest.onerror = function(e) {
+  console.log("Error", e.target.error.name);
+};
 };
 
 

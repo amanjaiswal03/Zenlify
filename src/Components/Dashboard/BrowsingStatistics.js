@@ -25,30 +25,42 @@ const BrowsingStatistics = () => {
         setDate(e.target.value);
     };
 
-    // Function to format time in HH:MM:SS format
-    
-
-    
-
      // Function to filter browsing history by date
      const filterBrowsingHistory = () => {
 
-        console.log(date);
         let filteredDate = new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        let key = 'browsingHistory-' + filteredDate;
         console.log(filteredDate);
 
-        chrome.storage.sync.get(key, (result) => {
-            console.log(result);
-            const filteredHistory = result[key];
-            console.log(filteredHistory);
-            if (filterBy === 'mostVisited') {
-                filteredHistory?.sort((a, b) => b.timesVisited - a.timesVisited);
-            } else if (filterBy === 'mostTimeSpent') {
-                filteredHistory?.sort((a, b) => b.timeSpent - a.timeSpent);
-            }
-            setBrowsingHistory(filteredHistory); 
-        });
+        // Get browsing history from IndexedDB
+        const openRequest = indexedDB.open("browsingHistoryDB", 1);
+        openRequest.onsuccess = function(event) {
+            const db = event.target.result;
+            const transaction = db.transaction(['browsingHistory'], "readwrite");
+            const objectStore = transaction.objectStore('browsingHistory');
+
+            const lowerBound = [filteredDate, ''];
+            const upperBound = [filteredDate, '\uffff'];
+            const range = IDBKeyRange.bound(lowerBound, upperBound);
+            const request = objectStore.getAll(range);
+
+            request.onsuccess = function(event) {
+                console.log(event);
+                let data = event.target.result;
+
+                console.log(data);
+                if (data) {
+                    // Sort the data
+                    if (filterBy === 'mostVisited') {
+                        data.sort((a, b) => b.timesVisited - a.timesVisited);
+                    } else if (filterBy === 'mostTimeSpent') {
+                        data.sort((a, b) => b.timeSpent - a.timeSpent);
+                    }
+                    setBrowsingHistory(data);
+                } else {
+                    setBrowsingHistory([]);
+                }
+            };
+        }
     };
 
     return (
@@ -76,7 +88,7 @@ const BrowsingStatistics = () => {
                         <tr key={index}>
                             <td>{entry.website}</td>
                             <td>{entry.timesVisited}</td>
-                            <td>{entry.formattedtimeSpent}</td>
+                            <td>{entry.formattedTimeSpent}</td>
                         </tr>
                     ))}
                 </tbody>
