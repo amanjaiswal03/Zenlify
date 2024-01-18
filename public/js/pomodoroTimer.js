@@ -98,13 +98,14 @@ function openInputPage() {
 // Function to log the achievement
 function logAchievement(achievement) {
 
+  console.log("plEASE!!!!")
   // Open or create the database
-  const openRequest = indexedDB.open("focusSessionHistoryDB", 1);
+  const openRequest = indexedDB.open("focusSessionHistoryDB", 2);
 
   openRequest.onupgradeneeded = function(e) {
     const db = e.target.result;
     if (!db.objectStoreNames.contains('focusSessionHistory')) {
-      db.createObjectStore('focusSessionHistory', { keyPath: 'startDate' });
+      db.createObjectStore('focusSessionHistory', { keyPath: ['startDate', 'startTime'] });
     }
   };
 
@@ -127,6 +128,7 @@ function logAchievement(achievement) {
       timezoneArea: timezoneArea
     };
     objectStore.add(data);
+    console.log(objectStore);
 
     transaction.oncomplete = function() {
       console.log("All data has been saved to IndexedDB");
@@ -183,12 +185,7 @@ function addFocusSessionToCalendar(session) {
 function sendTimer() {
   const minutes = Math.floor(timerDuration / 60);
   const seconds = timerDuration % 60;
-  chrome.runtime.sendMessage({ minutes: minutes, seconds: seconds, onBreak: onBreak }, function(response) {
-    if (chrome.runtime.lastError) {
-      // Handle error
-      console.log(chrome.runtime.lastError.message);
-    }
-  });
+  chrome.runtime.sendMessage({ minutes: minutes, seconds: seconds, onBreak: onBreak });
 }
 
 

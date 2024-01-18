@@ -3,7 +3,7 @@ import CalendarSync from './CalendarSync';
 
 const FocusSession = () => {
     const [focusSessionData, setFocusSessionData] = useState([]);
-    const [date, setDate] = useState(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())).toISOString().split('T')[0]);
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
 
     useEffect(() => {
@@ -27,11 +27,11 @@ const FocusSession = () => {
         });
         console.log(filteredDate);
 
-        const openRequest = indexedDB.open('focusSessionHistoryDB', 1);
+        const openRequest = indexedDB.open('focusSessionHistoryDB', 2);
         openRequest.onupgradeneeded = function(e) {
             const db = e.target.result;
             if (!db.objectStoreNames.contains('focusSessionHistory')) {
-              db.createObjectStore('focusSessionHistory', { keyPath: 'startDate' });
+              db.createObjectStore('focusSessionHistory', { keyPath: ['startDate', 'startTime'] });
             }
         };
         openRequest.onsuccess = function (event) {
@@ -44,7 +44,10 @@ const FocusSession = () => {
             const objectStore = transaction.objectStore('focusSessionHistory');
 
 
-            const request = objectStore.getAll(IDBKeyRange.only(filteredDate));
+            const lowerBound = [filteredDate, ''];
+            const upperBound = [filteredDate, '\uffff'];
+            const range = IDBKeyRange.bound(lowerBound, upperBound);
+            const request = objectStore.getAll(range);
             console.log(request);
 
             request.onsuccess = function (event) {
