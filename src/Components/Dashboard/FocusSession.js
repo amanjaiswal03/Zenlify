@@ -3,7 +3,7 @@ import CalendarSync from './CalendarSync';
 
 const FocusSession = () => {
     const [focusSessionData, setFocusSessionData] = useState([]);
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [date, setDate] = useState(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]);
 
 
     useEffect(() => {
@@ -73,7 +73,7 @@ const FocusSession = () => {
             <input
                 type="date"
                 value={date}
-                max={new Date().toISOString().split('T')[0]}
+                max={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]}
                 onChange={handleDateChange}
             />
             
