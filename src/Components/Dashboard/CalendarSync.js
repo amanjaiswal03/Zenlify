@@ -43,13 +43,19 @@ const CalendarSync = () => {
                 console.log(chrome.runtime.lastError);
                 return;
             }
-            chrome.storage.sync.get(null, function(items) {
-                const focusSessionKeys = Object.keys(items).filter(key => key.startsWith('focusSession-'));
-                const focusSessionValues = focusSessionKeys.map(key => items[key]);
-                console.log(focusSessionValues);
-                focusSessionValues?.forEach(sessions => {
-                    sessions?.forEach(session => {
-                        
+            let focusSessionValues = [];
+            const openRequest = indexedDB.open('focusSessionHistoryDB', 2);
+            openRequest.onsuccess = function (event) {
+                const db = event.target.result;
+                const transaction = db.transaction(['focusSessionHistory'], 'readwrite');
+                const objectStore = transaction.objectStore('focusSessionHistory');
+                const request = objectStore.getAll();
+
+                request.onsuccess = function (event) {
+                    console.log(event);
+                    focusSessionValues = event.target.result;
+                    focusSessionValues?.forEach(session => {
+                        console.log(session);
                         const event = {
                             'summary': 'Focus Session',
                             'description': session.achievement,
@@ -64,7 +70,7 @@ const CalendarSync = () => {
                         };
                         const timeMin = encodeURIComponent(session.startDateTime);
                         const timeMax = encodeURIComponent(session.endDateTime);
-
+        
                         fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}`, {
                             method: 'GET',
                             headers: {
@@ -80,7 +86,7 @@ const CalendarSync = () => {
                                 console.log(event.start.dateTime);
                                 return existingEvent.description === event.description;
                             });
-
+        
                             if (isEventExist) {
                                 console.log('Event already exists.');
                             } else {
@@ -100,9 +106,8 @@ const CalendarSync = () => {
                         })
                         .catch(error => console.error('Error:', error));
                     });
-                });
-            });
-            
+                }
+            }
         });
     }
 

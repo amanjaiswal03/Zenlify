@@ -16,7 +16,7 @@ const BlockedWebsites = () => {
     const handleAddToBlockedWebsites = () => {
         // Add website to blockedWebsites array if it is not already present
         let updatedWebsite = searchTerm;
-        if (!searchTerm.startsWith('www.') && !searchTerm.match(/^[^.]+\.[^.]+\.com$/)) {
+        if (!searchTerm.startsWith('www.') && !searchTerm.match(/^[^.]+\.[^.]+\.[^.]+$/)) {
             updatedWebsite = 'www.' + searchTerm;
         }
         if (!blockedWebsites.includes(updatedWebsite)) {

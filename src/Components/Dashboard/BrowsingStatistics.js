@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 const BrowsingStatistics = () => {
     const [browsingHistory, setBrowsingHistory] = useState([]);
     const [filterBy, setFilterBy] = useState('mostVisited');
-    const [date, setDate] = useState(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())).toISOString().split('T')[0]);
+    const [date, setDate] = useState(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]);
+
 
     useEffect(() => {
         filterBrowsingHistory();
@@ -20,37 +21,59 @@ const BrowsingStatistics = () => {
         setDate(e.target.value);
     };
 
-    // Function to format time in HH:MM:SS format
-    
-
-    
-
      // Function to filter browsing history by date
      const filterBrowsingHistory = () => {
 
-        console.log(date);
         let filteredDate = new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        let key = 'browsingHistory-' + filteredDate;
         console.log(filteredDate);
 
-        chrome.storage.sync.get(key, (result) => {
-            console.log(result);
-            const filteredHistory = result[key];
-            console.log(filteredHistory);
-            if (filterBy === 'mostVisited') {
-                filteredHistory?.sort((a, b) => b.timesVisited - a.timesVisited);
-            } else if (filterBy === 'mostTimeSpent') {
-                filteredHistory?.sort((a, b) => b.timeSpent - a.timeSpent);
+        // Get browsing history from IndexedDB
+        const openRequest = indexedDB.open("browsingHistoryDB", 1);
+        openRequest.onupgradeneeded = function(e) {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('browsingHistory')) {
+              db.createObjectStore('browsingHistory', { keyPath: ['formattedDate', 'website'] });
             }
-            setBrowsingHistory(filteredHistory); 
-        });
+        };
+        openRequest.onsuccess = function(event) {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('browsingHistory')) {
+                console.log(`No object store: browsingHistory`);
+                return;
+            }
+            const transaction = db.transaction(['browsingHistory'], "readwrite");
+            const objectStore = transaction.objectStore('browsingHistory');
+
+            const lowerBound = [filteredDate, ''];
+            const upperBound = [filteredDate, '\uffff'];
+            const range = IDBKeyRange.bound(lowerBound, upperBound);
+            const request = objectStore.getAll(range);
+
+            request.onsuccess = function(event) {
+                console.log(event);
+                let data = event.target.result;
+
+                console.log(data);
+                if (data) {
+                    // Sort the data
+                    if (filterBy === 'mostVisited') {
+                        data.sort((a, b) => b.timesVisited - a.timesVisited);
+                    } else if (filterBy === 'mostTimeSpent') {
+                        data.sort((a, b) => b.timeSpent - a.timeSpent);
+                    }
+                    setBrowsingHistory(data);
+                } else {
+                    setBrowsingHistory([]);
+                }
+            };
+        }
     };
 
     return (
         <div id = "browsing-history">
             <h1>Browsing statistics </h1>
             {/* Date filter */}
-            <input type="date" value={date} max={new Date().toISOString().split('T')[0]} onChange={hanldeDateChange} />
+            <input type="date" value={date} max={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]} onChange={hanldeDateChange} />
             {/* Filter by */}
             <select onChange={handleFilterChange}>
                 <option value="mostVisited">Most visited</option>
@@ -71,7 +94,7 @@ const BrowsingStatistics = () => {
                         <tr key={index}>
                             <td>{entry.website}</td>
                             <td>{entry.timesVisited}</td>
-                            <td>{entry.formattedtimeSpent}</td>
+                            <td>{entry.formattedTimeSpent}</td>
                         </tr>
                     ))}
                 </tbody>

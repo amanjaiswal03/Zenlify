@@ -60,16 +60,19 @@
   font-size: 20px;
   color: #818181;
   display: block;
+  cursor: pointer;
 }
 
 .sidepanel a:hover {
   color: #000000;
 }
 
-.sidepanel .active a {
+.sidepanel a.active {
   background-color: #4CAF50;
-  color: #000000;
+  color: white;
 }
+
+
 /* END: Sidepanel */
 
 #focus-sessions{

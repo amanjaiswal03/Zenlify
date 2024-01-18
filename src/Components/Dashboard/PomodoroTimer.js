@@ -15,8 +15,11 @@ function PomodoroTimer() {
 
         // Event listener for timer updates
         chrome.runtime.onMessage.addListener((msg, sender, response) => {
-            if (msg.minutes !== undefined && msg.seconds !== undefined) {
+            if (msg.minutes !== null && msg.seconds !== null) {
                 setTimerDisplay(`${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`);
+            }
+            else{
+                setTimerDisplay('25:00');
             }
         });
 
@@ -58,14 +61,14 @@ function PomodoroTimer() {
             <input
                 id="pomodoroDuration"
                 type="number"
-                value={pomodoroDuration}
-                onChange={(e) => setPomodoroDuration(parseInt(e.target.value))}
+                defaultValue={pomodoroDuration}
+                onBlur={(e) => setPomodoroDuration(parseInt(e.target.value))}
             />
             <input
                 id="breakDuration"
                 type="number"
-                value={breakDuration}
-                onChange={(e) => setBreakDuration(parseInt(e.target.value))}
+                defaultValue={breakDuration}
+                onBlur={(e) => setBreakDuration(parseInt(e.target.value))}
             />
         </div>
     );

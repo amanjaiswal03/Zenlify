@@ -1,10 +1,5 @@
-import { timerRunning, startTimer, resetTimer, pauseTimer, sendTimer, logAchievement } from './pomodoroTimer.js';
+import { onBreak, timerRunning, startTimer, resetTimer, pauseTimer, sendTimer, logAchievement, openInputPage } from './pomodoroTimer.js';
 import { saveBrowsingHistory } from './browsingHistory.js';
-
-
-
-let tabTimes = {}; // Stores the timestamp when the user enters a website
-let tabUrls = {}; // Stores the url of the website the user is currently on
 
 
 // Event listener for when the extension is installed
@@ -14,35 +9,58 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.set({ pomodoroNotificationMessage: 'Your pomodoro session is over, take a well deserved break!', breakNotificationMessage: 'Your break is over, start a new session!' })
 });
 
-// Event listener for when a tab is activated (logs the time spent on the website)
+// FEATURE: browsing history with timespent event listeners
+let currentTab;
+let startTime;
+
+function calculateTimeSpent(tab, newVisit) {
+  if (tab && startTime && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
+    const endTime = Date.now();
+    const timeSpent = endTime - startTime;
+    saveBrowsingHistory(new URL(tab.url).hostname, timeSpent, newVisit);
+    console.log(`Time spent on ${tab.url}: ${timeSpent} ms`);
+  }
+}
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.active && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
+    calculateTimeSpent(currentTab, false);
+    currentTab = tab;
+    startTime = Date.now();
+  }
+});
+
 chrome.tabs.onActivated.addListener(activeInfo => {
-  const { tabId } = activeInfo;
-  if (tabTimes[tabId]) {
-    const timeSpent = Date.now() - tabTimes[tabId];
-    
-    chrome.tabs.get(tabId, tab => {
-      saveBrowsingHistory(new URL(tab.url).hostname, timeSpent, true);
+  chrome.tabs.get(activeInfo.tabId, (tab) => {
+    calculateTimeSpent(currentTab, true);
+    currentTab = tab;
+    startTime = Date.now();
+  });
+});
+
+chrome.idle.setDetectionInterval(15);
+chrome.idle.onStateChanged.addListener((newState) => {
+  if (newState === 'active') {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError.message);
+        return;
+      }
+      if (tabs.length > 0) {
+        calculateTimeSpent(currentTab, false);
+        currentTab = tabs[0];
+        startTime = Date.now();
+      }
     });
-
-    tabTimes[tabId] = Date.now();
+  } else if (['idle', 'locked'].includes(newState)) {
+    calculateTimeSpent(currentTab);
+    currentTab = null;
+    startTime = null;
   }
 });
 
-// Event listener for when a tab is removed (logs the time spent on the website)
-chrome.tabs.onRemoved.addListener(tabId => {
-  if (tabTimes[tabId]) {
-    const timeSpent = Date.now() - tabTimes[tabId];
-    if (tabUrls[tabId]) {
-      saveBrowsingHistory(tabUrls[tabId], timeSpent, false);
-    }
-    delete tabTimes[tabId];
-    delete tabUrls[tabId];
-  }
-});
+// FEATURE: blocked websites event listeners
 
-
-
-// Event listener for when a tab is updated (checks if the website is blocked or logs the time spent on the website)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   console.log('test');
   chrome.storage.sync.get(['blockedWebsites', 'isEnabled'], ({ blockedWebsites, isEnabled }) => {
@@ -52,15 +70,25 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
           chrome.tabs.update(tabId, { url: 'blocked.html' });
         }
       });
-    } else if (changeInfo.status === 'complete' && (tab.url.startsWith('http://') || tab.url.startsWith('https://'))) {
-      // Store the timestamp when the user enters the website
-      tabTimes[tabId] = Date.now();
-      if (tabUrls[tabId] !== new URL(tab.url).hostname) {
-        saveBrowsingHistory(new URL(tab.url).hostname, 0, true);
-      }
-      tabUrls[tabId] = new URL(tab.url).hostname;
     }
   });
+});
+
+
+// FEATURE: Pomodoro Timer event listeners
+
+chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+  if (notificationId === 'pomodoroNotification' && buttonIndex === 0) {
+    if (!onBreak) {
+      // Handle "Finish Timer" button click
+      resetTimer();
+      
+    } else {
+      // Handle "Start Break" button click
+      openInputPage();
+      startTimer();
+    }
+  }
 });
 
 // Event listener for messages from the pomodoro timer
@@ -90,7 +118,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-// Event listener for when a new tab is created (checks if the number of tabs exceeds the limit)
+// FEATURE: Max number of tabs event listener
+
 chrome.tabs.onCreated.addListener(() => {
   chrome.storage.sync.get('maxTabs', (result) =>
     chrome.tabs.query({currentWindow: true}, tabs => {
@@ -106,7 +135,8 @@ chrome.tabs.onCreated.addListener(() => {
   }));
 });
 
-// Function to fetch and update rules for blocking popups and ads
+// FEATURE: Block ads event listener
+
 function updateBlockAdsRules() {
   fetch('../rules/blockAds.json')
     .then(response => response.json())
@@ -127,7 +157,6 @@ function updateBlockAdsRules() {
     });
 }
 
-// Event listener for changes in chrome storage
 chrome.storage.onChanged.addListener(function(changes, namespace) {
   if (changes.blockAds) {
     updateBlockAdsRules();
