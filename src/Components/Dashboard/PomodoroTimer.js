@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Button, TextField, Typography, Paper } from '@mui/material';
+import { Box } from '@mui/system';
 
 function PomodoroTimer() {
     const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -16,10 +18,7 @@ function PomodoroTimer() {
         // Event listener for timer updates
         chrome.runtime.onMessage.addListener((msg, sender, response) => {
             if (msg.minutes !== null && msg.seconds !== null) {
-                setTimerDisplay(`${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`);
-            }
-            else{
-                setTimerDisplay('25:00');
+                setTimerDisplay(`${msg.minutes < 10 ? '0' : ''}${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`);
             }
         });
 
@@ -27,7 +26,6 @@ function PomodoroTimer() {
         const interval = setInterval(() => {
             chrome.runtime.sendMessage({ command: 'getTimer' });
         }, 1000);
-
 
         return () => clearInterval(interval);
     }, []);
@@ -48,29 +46,41 @@ function PomodoroTimer() {
         setIsTimerRunning(false);
     };
 
-
     return (
-        <div>
-            <button id="start" onClick={handleStartButtonClick}>
-                {isTimerRunning ? 'Pause' : 'Start'}
-            </button>
-            <button id="reset" onClick={handleResetButtonClick}>
-                Reset
-            </button>
-            <div id="time">{timerDisplay}</div>
-            <input
-                id="pomodoroDuration"
-                type="number"
-                defaultValue={pomodoroDuration}
-                onBlur={(e) => setPomodoroDuration(parseInt(e.target.value))}
-            />
-            <input
-                id="breakDuration"
-                type="number"
-                defaultValue={breakDuration}
-                onBlur={(e) => setBreakDuration(parseInt(e.target.value))}
-            />
-        </div>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, p: 3 }}>
+            <Paper elevation={3} sx={{ p: 2, width: '100%', maxWidth: 400 }}>
+                <Typography variant="h4" component="div" align="center" gutterBottom>
+                    Pomodoro Timer
+                </Typography>
+                <Typography variant="h2" component="div" align="center" gutterBottom>
+                    {timerDisplay}
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-around', mb: 2 }}>
+                    <TextField
+                        id="pomodoroDuration"
+                        type="number"
+                        defaultValue={pomodoroDuration}
+                        onBlur={(e) => setPomodoroDuration(parseInt(e.target.value))}
+                        label="Pomodoro Duration (minutes)"
+                    />
+                    <TextField
+                        id="breakDuration"
+                        type="number"
+                        defaultValue={breakDuration}
+                        onBlur={(e) => setBreakDuration(parseInt(e.target.value))}
+                        label="Break Duration (minutes)"
+                    />
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
+                    <Button variant="contained" color="primary" onClick={handleStartButtonClick}>
+                        {isTimerRunning ? 'Pause' : 'Start'}
+                    </Button>
+                    <Button variant="contained" color="secondary" onClick={handleResetButtonClick}>
+                        Reset
+                    </Button>
+                </Box>
+            </Paper>
+        </Box>
     );
 }
 
