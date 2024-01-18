@@ -1,29 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Select, MenuItem } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 const BrowsingStatistics = () => {
     const [browsingHistory, setBrowsingHistory] = useState([]);
     const [filterBy, setFilterBy] = useState('mostVisited');
     const [date, setDate] = useState(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]);
 
-
     useEffect(() => {
         filterBrowsingHistory();
     }, [date, filterBy]);
-    
 
-    // Function to handle filter change
     const handleFilterChange = (e) => {
         setFilterBy(e.target.value);
     };
 
-    //Function to handle date change
-    const hanldeDateChange = (e) => {
+    const handleDateChange = (e) => {
         setDate(e.target.value);
     };
 
-     // Function to filter browsing history by date
-     const filterBrowsingHistory = () => {
-
+    const filterBrowsingHistory = () => {
         let filteredDate = new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         console.log(filteredDate);
 
@@ -68,39 +65,93 @@ const BrowsingStatistics = () => {
             };
         }
     };
+    // Prepare data for the pie chart
+    const pieData = browsingHistory.map(entry => ({
+        name: entry.website,
+        value: entry.timeSpent, // Use timeSpent for the value
+        timesVisited: entry.timesVisited, // Add timesVisited to the data
+        formattedTimeSpent: entry.formattedTimeSpent, // Add formattedTimeSpent to the data
+        color: '#' + Math.floor(Math.random()*16777215).toString(16) // Generate random color
+    }));
+
 
     return (
-        <div id = "browsing-history">
-            <h1>Browsing statistics </h1>
-            {/* Date filter */}
-            <input type="date" value={date} max={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]} onChange={hanldeDateChange} />
-            {/* Filter by */}
-            <select onChange={handleFilterChange}>
-                <option value="mostVisited">Most visited</option>
-                <option value="mostTimeSpent">Most time spent</option>
-            </select>
-
-            {/* Browsing history table */}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Website</th>
-                        <th>Times visited</th>
-                        <th>Time spent</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {browsingHistory?.map((entry, index) => (
-                        <tr key={index}>
-                            <td>{entry.website}</td>
-                            <td>{entry.timesVisited}</td>
-                            <td>{entry.formattedTimeSpent}</td>
-                        </tr>
+        <Container maxWidth="md">
+            <Typography variant="h4" component="h1" gutterBottom>
+                    Browsing statistics
+            </Typography>
+            <div style={{ display: 'flex' }}>
+                
+                <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Select
+                            value={filterBy}
+                            onChange={handleFilterChange}
+                            variant="outlined"
+                        >
+                            <MenuItem value="mostVisited">Most visited</MenuItem>
+                            <MenuItem value="mostTimeSpent">Most time spent</MenuItem>
+                        </Select>
+                        <TextField
+                            type="date"
+                            value={date}
+                            max={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]}
+                            onChange={handleDateChange}
+                            variant="outlined"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                    </div>
+                    <TableContainer component={Paper}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Website</TableCell>
+                                    <TableCell>Times visited</TableCell>
+                                    <TableCell>Time spent</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {browsingHistory?.map((entry, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>{entry.website}</TableCell>
+                                        <TableCell>{entry.timesVisited}</TableCell>
+                                        <TableCell>{entry.formattedTimeSpent}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </div>
+                <PieChart width={500} height={500}> {/* Increase size */}
+                    <Pie
+                        data={pieData}
+                        cx={250} // Adjust center
+                        cy={250} // Adjust center
+                        labelLine={false}
+                        outerRadius={100} // Increase radius
+                        fill="#8884d8"
+                        dataKey="value"
+                    >
+                        {
+                            pieData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)
+                        }
+                    </Pie>
+                    <Tooltip formatter={(value, name, props) => [`${name}, Time spent: ${props.payload.formattedTimeSpent}, visited ${props.payload.timesVisited} times`]} />
+                </PieChart>
+                <div>
+                    {pieData.map((entry, index) => (
+                        <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                            <div style={{ width: '10px', height: '10px', backgroundColor: entry.color, marginRight: '10px' }}></div>
+                            <p style={{ fontSize: '10px' }}>{entry.name}</p>
+                        </div>
                     ))}
-                </tbody>
-            </table>
-        </div>
+                </div>
+            </div>
+        </Container>
     );
 };
 
 export default BrowsingStatistics;
+

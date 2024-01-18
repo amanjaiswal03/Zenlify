@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import CalendarSync from './CalendarSync';
+import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import Paper from '@mui/material/Paper';
 
 const FocusSession = () => {
     const [focusSessionData, setFocusSessionData] = useState([]);
     const [date, setDate] = useState(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]);
 
-
     useEffect(() => {
-        // Code to run on component mount
         filterFocusSessionData(date);
-
     }, [date]);
 
     const handleDateChange = (e) => {
         setDate(e.target.value);
     }
 
-    // Function to filter focus session data by date
-    
     const filterFocusSessionData = (date) => {
         //convert date to string and in the format "January 6, 2024"
         let filteredDate = new Date(date).toLocaleDateString('en-US', {
@@ -62,40 +59,51 @@ const FocusSession = () => {
                 }
             };
         };
-        
     };
 
     return (
-        <div id = "focus-sessions">
-            <h1>Focus session history </h1>
-            {/* Filter focus session data by date */}
-            <CalendarSync />
-            <input
-                type="date"
-                value={date}
-                max={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]}
-                onChange={handleDateChange}
-            />
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Time-period</th>
-                        <th>Total time</th>
-                        <th>Achievements</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {focusSessionData?.map((session, index) => (
-                        <tr key={index}>
-                            <td>{`${session.startTime} - ${session.endTime}`}</td>
-                            <td>{session.totalTimeElapsed}</td>
-                            <td>{session.achievement}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+        <Container maxWidth="md">
+            <Typography variant="h4" component="h1" gutterBottom>
+                Focus session history
+            </Typography>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div>
+                    <CalendarSync />
+                </div>
+                <div>
+                    <TextField
+                        type="date"
+                        value={date}
+                        max={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]}
+                        onChange={handleDateChange}
+                        variant="outlined"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    />
+                </div>
+            </div>
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><strong>Time-period</strong></TableCell>
+                            <TableCell><strong>Total time</strong></TableCell>
+                            <TableCell><strong>Achievements</strong></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {focusSessionData?.map((session, index) => (
+                            <TableRow key={index}>
+                                <TableCell>{`${session.startTime} - ${session.endTime}`}</TableCell>
+                                <TableCell>{session.totalTimeElapsed}</TableCell>
+                                <TableCell>{session.achievement}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Container>
     );
 };
 
