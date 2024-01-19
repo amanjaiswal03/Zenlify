@@ -4,8 +4,7 @@ import { saveBrowsingHistory } from './browsingHistory.js';
 
 // Event listener for when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.action.setBadgeText({ text: 'ON' });
-  chrome.storage.sync.set({ blockedWebsites: [], isEnabled: true, maxTabs : 20, isHideWidgets: false, blockedKeywords: [], blockAds: false, googleSync: false });
+  chrome.storage.sync.set({ blockedWebsites: [], maxTabs : 20, isHideWidgets: false, blockedKeywords: [], blockAds: false, googleSync: false });
   chrome.storage.sync.set({ pomodoroNotificationMessage: 'Your pomodoro session is over, take a well deserved break!', breakNotificationMessage: 'Your break is over, start a new session!' })
 });
 
@@ -63,8 +62,8 @@ chrome.idle.onStateChanged.addListener((newState) => {
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   console.log('test');
-  chrome.storage.sync.get(['blockedWebsites', 'isEnabled'], ({ blockedWebsites, isEnabled }) => {
-    if (isEnabled && blockedWebsites.includes(new URL(tab.url).hostname)) {
+  chrome.storage.sync.get(['blockedWebsites'], ({ blockedWebsites }) => {
+    if (blockedWebsites.includes(new URL(tab.url).hostname)) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs.length > 0) {
           chrome.tabs.update(tabId, { url: 'blocked.html' });

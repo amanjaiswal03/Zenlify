@@ -3,23 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/popup.css">
     <title>Popup</title>
 </head>
 <body>
     <div id="popup">
-        <p><strong>You are currently on: </strong><br /> <span id="url-hostname">No valid URL</span></p>
-        <button id="block-site-btn" disabled>Block Site</button>
-        <div id="timer">
-            <button id="start">Start</button>
-            <button id="reset">Reset</button>
-            <div>
-              <div id="time"></div>
-              <input type="number" id="pomodoroDuration" placeholder="Pomodoro minutes (default 25)">
-              <input type="number" id="breakDuration" placeholder="Break minutes (default 5)">
-            </div>
+        <div id="block-url">
+          <p><strong>You are currently on: </strong><br /> <span id="url-hostname">No valid URL</span></p>
+          <button id="block-site-btn" disabled>Block Site</button>
+        </div>
+        <div id="timer" class="timer">
+          <div class="timer-box">
+              <h2 class="timer-title">Focus Session</h2>
+              <div id="time" class="timer-display"></div>
+                <div class="timer-inputs">
+                  <label for="pomodoroDuration">Pomodoro Duration (minutes)</label>
+                  <input type="number" id="pomodoroDuration" value="25">
+                  <label for="breakDuration">Break Duration (minutes)</label>
+                  <input type="number" id="breakDuration" value="5">
+                </div>
+              <div class="timer-buttons">
+                  <button id="start" class="timer-button timer-button-primary">Start</button>
+                  <button id="reset" class="timer-button timer-button-secondary">Reset</button>
+              </div>
           </div>
-        <button id="toggle-extension-btn">Enable Extension</button>
-        <button id="advanced-option-btn">Advanced options</button>
+      </div>
+        <div id = "options">
+          <button id="advanced-option-btn">Advanced options</button>
+        </div>
     </div>
     <script src="popup.js"></script>
 </body>

@@ -1,12 +1,10 @@
 // Event listener for when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    let isEnabled = false;
     let url; // Declare url as a global variable
 
     // Get elements from the DOM
     const urlHostnameElement = document.getElementById('url-hostname');
     const blockSiteButton = document.getElementById('block-site-btn');
-    const toggleExtensionButton = document.getElementById('toggle-extension-btn');
     const advancedOptionButton = document.getElementById('advanced-option-btn');
 
     // Pomodoro timer elements
@@ -84,12 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Get extension state from storage and update toggle button
-    chrome.storage.sync.get('isEnabled', (data) => {
-        isEnabled = !!data.isEnabled;
-        toggleExtensionButton.textContent = isEnabled ? 'Disable Extension' : 'Enable Extension';
-    });
-
     // Event listener for block site button
     blockSiteButton.addEventListener('click', function() {
         try {
@@ -115,16 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Event listener for toggle extension button
-    toggleExtensionButton.addEventListener('click', function() {
-        isEnabled = !isEnabled;
-        chrome.storage.sync.set({ isEnabled: isEnabled }, () => {
-            console.log(`Extension is ${isEnabled ? 'enabled' : 'disabled'}`);
-            toggleExtensionButton.textContent = isEnabled ? 'Disable Extension' : 'Enable Extension';
-            // Set badge text to ON or OFF
-            chrome.action.setBadgeText({ text: isEnabled ? 'ON' : 'OFF' });
-        });
-    });
 
     // Event listener for advanced option button
     advancedOptionButton.addEventListener('click', function() {
