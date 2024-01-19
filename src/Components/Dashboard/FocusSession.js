@@ -64,7 +64,7 @@ const FocusSession = () => {
     return (
         <Container maxWidth="md">
             <Typography variant="h4" component="h1" gutterBottom>
-                Focus session history
+                Focus session logs
             </Typography>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>

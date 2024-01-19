@@ -47,10 +47,11 @@ function PomodoroTimer() {
     };
 
     return (
+        
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, p: 3 }}>
             <Paper elevation={3} sx={{ p: 2, width: '100%', maxWidth: 400 }}>
                 <Typography variant="h4" component="div" align="center" gutterBottom>
-                    Pomodoro Timer
+                    Focus Session
                 </Typography>
                 <Typography variant="h2" component="div" align="center" gutterBottom>
                     {timerDisplay}
@@ -75,7 +76,7 @@ function PomodoroTimer() {
                     <Button variant="contained" color="primary" onClick={handleStartButtonClick}>
                         {isTimerRunning ? 'Pause' : 'Start'}
                     </Button>
-                    <Button variant="contained" color="secondary" onClick={handleResetButtonClick}>
+                    <Button variant="outlined" color="secondary" onClick={handleResetButtonClick}>
                         Reset
                     </Button>
                 </Box>
