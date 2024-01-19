@@ -17,8 +17,8 @@ function GeneralSettings() {
 
     return (
         <Box sx={{ padding: 2 }}>
-            <Typography variant="h4" component="div" gutterBottom>
-                General
+            <Typography variant="h5" component="div" gutterBottom>
+                Tabs
             </Typography>
             <TextField
                 type="number"

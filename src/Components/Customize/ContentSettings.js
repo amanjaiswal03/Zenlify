@@ -20,8 +20,8 @@ function ContentSettings() {
 
     return (
         <Box sx={{ padding: 2 }}>
-            <Typography variant="h4" component="div" gutterBottom>
-                Content Settings
+            <Typography variant="h5" component="div" gutterBottom>
+                Content
             </Typography>
             <FormControlLabel
                 control={
@@ -32,7 +32,7 @@ function ContentSettings() {
                         color="primary"
                     />
                 }
-                label="Distraction free youtube (hide 'watch next' and ads)"
+                label="Distraction free youtube (hide 'suggestions' and ads)"
             /> <br />
             <FormControlLabel
                 control={

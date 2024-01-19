@@ -26,6 +26,10 @@ const Notifications = () => {
                 <Typography variant="h4" component="div" gutterBottom>
                     Notifications
                 </Typography>
+                <Typography variant="h6" component="div" gutterBottom>
+                    Customize messages
+                </Typography>
+                
                 <TextField
                     label="Pomodoro Notification Message"
                     multiline

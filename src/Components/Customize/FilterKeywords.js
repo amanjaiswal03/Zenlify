@@ -30,9 +30,9 @@ const KeywordFilter = () => {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', height: '100vh' }}>
-        <Box sx={{ padding: 2 }}>
-            <Typography variant="h4" component="div" gutterBottom>
-                Distracting Keywords
+        <Box sx={{ padding: 2, maxWidth: 'sm' }}>
+            <Typography component="div" gutterBottom>
+                Enter keyword(s) you want to hide from all websites
             </Typography>
             <TextField
                 type="text"
