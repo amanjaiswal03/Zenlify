@@ -4,7 +4,7 @@ import { saveBrowsingHistory } from './browsingHistory.js';
 
 // Event listener for when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.set({ blockedWebsites: [], maxTabs : 20, isHideWidgets: false, blockedKeywords: [], blockAds: false, googleSync: false });
+  chrome.storage.sync.set({ blockedWebsites: [], maxTabs : 20, isHideWidgets: false, blockedKeywords: [], blockAds: false, googleSync: false, breakTime: false });
   chrome.storage.sync.set({ pomodoroNotificationMessage: 'Your pomodoro session is over, take a well deserved break!', breakNotificationMessage: 'Your break is over, start a new session!' })
 });
 
@@ -84,6 +84,7 @@ chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) =
       
     } else {
       // Handle "Start Break" button click
+      chrome.storage.sync.set({ breakTime: true });
       openInputPage();
       startTimer();
     }

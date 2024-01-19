@@ -7,6 +7,8 @@ function PomodoroTimer() {
     const [timerDisplay, setTimerDisplay] = useState('25:00');
     const [pomodoroDuration, setPomodoroDuration] = useState(25);
     const [breakDuration, setBreakDuration] = useState(5);
+    const [title, setTitle] = useState('Focus Session');
+
 
     useEffect(() => {
         // Check if the timer is running when the component is mounted
@@ -19,6 +21,13 @@ function PomodoroTimer() {
         chrome.runtime.onMessage.addListener((msg, sender, response) => {
             if (msg.minutes !== null && msg.seconds !== null) {
                 setTimerDisplay(`${msg.minutes < 10 ? '0' : ''}${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`);
+            }
+        });
+
+        //check if the timer is on break session
+        chrome.storage.sync.get(['breakTime'], ({ breakTime }) => {
+            if (breakTime) {
+                setTitle('Break Session');
             }
         });
 
@@ -44,6 +53,7 @@ function PomodoroTimer() {
     const handleResetButtonClick = () => {
         chrome.runtime.sendMessage({ command: 'reset' });
         setIsTimerRunning(false);
+        setTitle('Focus Session');
     };
 
     return (
@@ -51,7 +61,7 @@ function PomodoroTimer() {
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, p: 3 }}>
             <Paper elevation={3} sx={{ p: 2, width: '100%', maxWidth: 400 }}>
                 <Typography variant="h4" component="div" gutterBottom align="left">
-                    Focus Session
+                    {title}
                 </Typography>
                 <Typography variant="h2" component="div" align="center" gutterBottom>
                     {timerDisplay}

@@ -57,6 +57,7 @@ function resetTimer() {
   onBreak = false;
   isPaused = false;
   timerDuration = pomodoroDuration;
+  chrome.storage.sync.set({ breakTime: false });
   sendTimer();
 }
 
@@ -185,7 +186,11 @@ function addFocusSessionToCalendar(session) {
 function sendTimer() {
   const minutes = Math.floor(timerDuration / 60);
   const seconds = timerDuration % 60;
-  chrome.runtime.sendMessage({ minutes: minutes, seconds: seconds, onBreak: onBreak });
+  chrome.runtime.sendMessage({ minutes: minutes, seconds: seconds, onBreak: onBreak }, (response) => {
+    if (chrome.runtime.lastError) {
+      console.log(chrome.runtime.lastError.message);
+    }
+  });
 }
 
 

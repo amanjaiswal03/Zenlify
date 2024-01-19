@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const timerDisplay = document.getElementById('time');
     const pomodoroDurationInput = document.getElementById('pomodoroDuration');
     const breakDurationInput = document.getElementById('breakDuration');
+    const timerTitle = document.getElementById('timer-title');
 
     let isTimerRunning = false; // Add a flag to track if the timer is running
     timerDisplay.textContent = `${pomodoroDurationInput.value ? pomodoroDurationInput.value : '25'}:00`; // Set the initial timer display
@@ -28,6 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
             isTimerRunning = false; // Set the timer running flag to false
         }
     });
+
+    chrome.storage.sync.get(['breakTime'], ({ breakTime }) => {
+        if (breakTime) {
+            timerTitle.textContent = 'Break Session';
+        }
+    });
+
 
     // Event listener for start button
     startButton.addEventListener('click', function() {
@@ -49,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
     resetButton.addEventListener('click', function() {
         chrome.runtime.sendMessage({ command: 'reset' });
         startButton.textContent = 'Start'; // Reset the button text to 'Start'
+        timerTitle.textContent = 'Focus Session';
         isTimerRunning = false; // Reset the timer running flag
     });
 
