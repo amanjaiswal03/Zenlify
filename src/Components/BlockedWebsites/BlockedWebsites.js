@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Box, TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Avatar, Card, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const BlockedWebsites = () => {
     const [blockedWebsites, setBlockedWebsites] = useState([]);
@@ -38,24 +40,42 @@ const BlockedWebsites = () => {
     };
 
     return (
-        <div>
-            <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Enter website URL"
-            />
-            <button onClick={handleAddToBlockedWebsites}>Add to Blocked List</button>
+        <div style={{ display: 'flex', justifyContent: 'center', height: '100vh' }}>
+            <Box sx={{ padding: 2, width: '100%', maxWidth: 600 }}>
+                <Typography variant="h4" component="div" gutterBottom>
+                    Blocked Websites
+                </Typography>
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Enter website URL"
+                />
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={handleAddToBlockedWebsites} 
+                    sx={{ marginTop: 2 }}>
+                    Add to Blocked List
+                </Button>
 
-            <ul>
-                {blockedWebsites.map((website) => (
-                    <li key={website}>
-                        <img src={`https://www.google.com/s2/favicons?domain=${website}`} alt="Website Icon" />
-                        {website}
-                        <button onClick={() => handleRemoveFromBlockedWebsites(website)}>Remove</button>
-                    </li>
-                ))}
-            </ul>
+                <List>
+                    {blockedWebsites.map((website) => (
+                        <ListItem key={website}>
+                            <Card sx={{ width: '100%', marginTop: 2, display: 'flex', alignItems: 'center'}}>
+                                <Avatar src={`https://www.google.com/s2/favicons?domain=${website}&sz=64`} sx={{ margin: 2 }} />
+                                <ListItemText primary={website} />
+                                <ListItemSecondaryAction sx={{padding: 2}}>
+                                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromBlockedWebsites(website)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </Card>
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
         </div>
     );
 };
