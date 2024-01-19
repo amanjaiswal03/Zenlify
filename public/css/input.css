@@ -18,6 +18,8 @@ body {
 
 #inputForm input[type="text"] {
     width: 100%;
+    margin-left: -10px;
+    margin-bottom: 5px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
