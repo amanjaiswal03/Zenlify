@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import CalendarSync from './CalendarSync';
-import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Button } from '@mui/material';
 import Paper from '@mui/material/Paper';
 
 const FocusSession = () => {
     const [focusSessionData, setFocusSessionData] = useState([]);
     const [date, setDate] = useState(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
         filterFocusSessionData(date);
@@ -40,7 +41,6 @@ const FocusSession = () => {
             const transaction = db.transaction(['focusSessionHistory'], 'readwrite');
             const objectStore = transaction.objectStore('focusSessionHistory');
 
-
             const lowerBound = [filteredDate, ''];
             const upperBound = [filteredDate, '\uffff'];
             const range = IDBKeyRange.bound(lowerBound, upperBound);
@@ -53,6 +53,8 @@ const FocusSession = () => {
 
                 console.log(data);
                 if (data) {
+                    // Sort the data by latest start time
+                    data.reverse();
                     setFocusSessionData(data);
                 } else {
                     setFocusSessionData([]);
@@ -95,7 +97,7 @@ const FocusSession = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {focusSessionData?.map((session, index) => (
+                        {(isExpanded ? focusSessionData : focusSessionData.slice(0, 5)).map((session, index) => (
                             <TableRow key={index}>
                                 <TableCell>{`${session.startTime} - ${session.endTime}`}</TableCell>
                                 <TableCell>{session.totalTimeElapsed}</TableCell>
@@ -105,6 +107,11 @@ const FocusSession = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            {focusSessionData.length > 5 && (
+                <Button onClick={() => setIsExpanded(!isExpanded)}>
+                    {isExpanded ? 'Show Less' : 'Show More'}
+                </Button>
+            )}
         </Container>
     );
 };

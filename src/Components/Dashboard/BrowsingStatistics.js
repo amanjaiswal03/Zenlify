@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Select, MenuItem } from '@mui/material';
+import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Select, MenuItem, Button } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 
@@ -7,6 +7,7 @@ const BrowsingStatistics = () => {
     const [browsingHistory, setBrowsingHistory] = useState([]);
     const [filterBy, setFilterBy] = useState('mostVisited');
     const [date, setDate] = useState(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
         filterBrowsingHistory();
@@ -76,8 +77,8 @@ const BrowsingStatistics = () => {
 
 
     return (
-        <div style={{ display: 'flex', marginLeft: "-370px"}}>
-        <Container maxWidth="md">
+        <div style={{ display: 'flex', marginLeft: "-70px"}}>
+        <Container>
             <Typography variant="h4" component="h1" gutterBottom align="left">
                 Browsing statistics
             </Typography>
@@ -114,7 +115,7 @@ const BrowsingStatistics = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {browsingHistory?.map((entry, index) => (
+                                {(isExpanded ? browsingHistory : browsingHistory.slice(0, 5)).map((entry, index) => (
                                     <TableRow key={index}>
                                         <TableCell>{entry.website}</TableCell>
                                         <TableCell>{entry.timesVisited}</TableCell>
@@ -124,6 +125,11 @@ const BrowsingStatistics = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    {browsingHistory.length > 5 && (
+                    <Button onClick={() => setIsExpanded(!isExpanded)}>
+                        {isExpanded ? 'Show Less' : 'Show More'}
+                    </Button>
+                    )}
                 </div>
                 <PieChart width={500} height={500}> {/* Increase size */}
                     <Pie
