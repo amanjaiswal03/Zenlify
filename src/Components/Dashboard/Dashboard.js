@@ -7,9 +7,11 @@ import BrowsingStatistics from './BrowsingStatistics';
 const Dashboard = () => {
     return (
         <div>
-        <div style={{ display: 'flex' }}>
-            <FocusSession />
+        <div style={{ display: 'flex'}}>
+            <div style={{ marginLeft: '250px'}}>
             <PomodoroTimer />
+            </div>
+            <FocusSession />
         </div>
         <BrowsingStatistics />
         </div>

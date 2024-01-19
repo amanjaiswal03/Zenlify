@@ -50,7 +50,7 @@ function PomodoroTimer() {
         
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, p: 3 }}>
             <Paper elevation={3} sx={{ p: 2, width: '100%', maxWidth: 400 }}>
-                <Typography variant="h4" component="div" align="center" gutterBottom>
+                <Typography variant="h4" component="div" gutterBottom align="left">
                     Focus Session
                 </Typography>
                 <Typography variant="h2" component="div" align="center" gutterBottom>

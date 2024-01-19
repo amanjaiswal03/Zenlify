@@ -63,26 +63,28 @@ const FocusSession = () => {
 
     return (
         <Container maxWidth="md">
-            <Typography variant="h4" component="h1" gutterBottom>
-                Focus session logs
-            </Typography>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="h4" component="h1" gutterBottom align="left">
+                    Focus session logs
+                </Typography>
                 <div>
-                    <CalendarSync />
-                </div>
-                <div>
-                    <TextField
-                        type="date"
-                        value={date}
-                        max={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]}
-                        onChange={handleDateChange}
-                        variant="outlined"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
+                <CalendarSync />
                 </div>
             </div>
+            
+            <div style = {{display: 'flex', justifyContent: 'flex-end'}}>
+                <TextField
+                    type="date"
+                    value={date}
+                    max={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]}
+                    onChange={handleDateChange}
+                    variant="outlined"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </div>
+            
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>

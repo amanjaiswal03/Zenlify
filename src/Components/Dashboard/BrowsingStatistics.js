@@ -76,9 +76,10 @@ const BrowsingStatistics = () => {
 
 
     return (
+        <div style={{ display: 'flex', marginLeft: "-370px"}}>
         <Container maxWidth="md">
-            <Typography variant="h4" component="h1" gutterBottom>
-                    Browsing statistics
+            <Typography variant="h4" component="h1" gutterBottom align="left">
+                Browsing statistics
             </Typography>
             <div style={{ display: 'flex' }}>
                 
@@ -150,6 +151,7 @@ const BrowsingStatistics = () => {
                 </div>
             </div>
         </Container>
+        </div>
     );
 };
 
