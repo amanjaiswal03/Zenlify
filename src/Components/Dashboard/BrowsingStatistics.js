@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Select, MenuItem, Button } from '@mui/material';
+import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Select, MenuItem, Button, Avatar } from '@mui/material';
 import Paper from '@mui/material/Paper';
-import { PieChart, Pie, Cell, Tooltip } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from 'recharts';
 
 const BrowsingStatistics = () => {
     const [browsingHistory, setBrowsingHistory] = useState([]);
     const [filterBy, setFilterBy] = useState('mostVisited');
     const [date, setDate] = useState(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]);
     const [isExpanded, setIsExpanded] = useState(false);
+    const colors = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6'];
 
     useEffect(() => {
         filterBrowsingHistory();
@@ -66,18 +67,17 @@ const BrowsingStatistics = () => {
             };
         }
     };
-    // Prepare data for the pie chart
-    const pieData = browsingHistory.map(entry => ({
+    // prepare data for bar chart
+    const barData = browsingHistory.slice(0, 5).map(entry => ({
         name: entry.website,
-        value: entry.timeSpent, // Use timeSpent for the value
-        timesVisited: entry.timesVisited, // Add timesVisited to the data
-        formattedTimeSpent: entry.formattedTimeSpent, // Add formattedTimeSpent to the data
-        color: '#' + Math.floor(Math.random()*16777215).toString(16) // Generate random color
+        timesVisited: entry.timesVisited,
+        timeSpent: entry.timeSpent,
+        formattedTimeSpent: entry.formattedTimeSpent,
     }));
 
 
     return (
-        <div style={{ display: 'flex', marginLeft: "-70px"}}>
+        <div style={{ display: 'flex', marginLeft: "-80px"}}>
         <Container>
             <Typography variant="h4" component="h1" gutterBottom align="left">
                 Browsing statistics
@@ -109,15 +109,20 @@ const BrowsingStatistics = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Website</TableCell>
-                                    <TableCell>Times visited</TableCell>
-                                    <TableCell>Time spent</TableCell>
+                                    <TableCell><strong>Website</strong></TableCell>
+                                    <TableCell><strong>Times visited</strong></TableCell>
+                                    <TableCell><strong>Time spent</strong></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {(isExpanded ? browsingHistory : browsingHistory.slice(0, 5)).map((entry, index) => (
                                     <TableRow key={index}>
-                                        <TableCell>{entry.website}</TableCell>
+                                        <TableCell>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <Avatar src={`https://www.google.com/s2/favicons?domain=${entry.website}&sz=64`} sx={{ margin: 2 }} />
+                                                <span>{entry.website}</span>
+                                            </div>
+                                        </TableCell>
                                         <TableCell>{entry.timesVisited}</TableCell>
                                         <TableCell>{entry.formattedTimeSpent}</TableCell>
                                     </TableRow>
@@ -131,26 +136,25 @@ const BrowsingStatistics = () => {
                     </Button>
                     )}
                 </div>
-                <PieChart width={500} height={500}> {/* Increase size */}
-                    <Pie
-                        data={pieData}
-                        cx={250} // Adjust center
-                        cy={250} // Adjust center
-                        labelLine={false}
-                        outerRadius={100} // Increase radius
-                        fill="#8884d8"
-                        dataKey="value"
-                    >
+                <div style = {{marginLeft: "50px"}}>
+                <BarChart width={500} height={300} data={barData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="formattedTimeSpent" label={{ value: 'Time spent', position: 'insideBottomRight', offset: 0 }} />
+                    <YAxis label={{ value: 'Times visited', angle: -90, position: 'insideLeft' }}/>
+                    <Tooltip formatter={(value, name, props) => [`${props.payload.name},  visited:${props.payload.timesVisited} `]} />
+                    <Bar dataKey="timesVisited">
                         {
-                            pieData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)
+                            barData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                            ))
                         }
-                    </Pie>
-                    <Tooltip formatter={(value, name, props) => [`${name}, Time spent: ${props.payload.formattedTimeSpent}, visited ${props.payload.timesVisited} times`]} />
-                </PieChart>
+                    </Bar>
+                </BarChart>
+                </div>
                 <div>
-                    {pieData.map((entry, index) => (
+                    {barData.map((entry, index) => (
                         <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: '10px', height: '10px', backgroundColor: entry.color, marginRight: '10px' }}></div>
+                            <div style={{ width: '10px', height: '10px', backgroundColor: colors[index], marginRight: '10px' }}></div>
                             <p style={{ fontSize: '10px' }}>{entry.name}</p>
                         </div>
                     ))}
