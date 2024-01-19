@@ -1,8 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
+    let achievementCount = 1;
+
+    document.getElementById('addAchievement').addEventListener('click', function() {
+        var achievement = document.getElementById('achievement').value;
+        if (achievement) {
+            var li = document.createElement('li');
+            li.textContent = achievement;
+            document.getElementById('achievementList').appendChild(li);
+            document.getElementById('achievement').value = '';
+        }
+    });
+
+
     document.getElementById('inputForm').addEventListener('submit', function(event) {
         event.preventDefault();
-
-        const achievement = document.getElementById('achievement').value;
+        let achievement = '';
+        var lis = document.getElementById('achievementList').getElementsByTagName('li');
+        for (let i = 0; i < lis.length; i++) {
+            achievement += lis[i].textContent;
+            if (i < lis.length - 1) {
+                achievement += ', '; // Add a comma and a space between achievement
+            }
+        }
         console.log(achievement);
 
         // Send the achievement to the background script

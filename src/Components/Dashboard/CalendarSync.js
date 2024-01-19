@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from 'react';
+import Button from '@mui/material/Button';
+import SyncIcon from '@mui/icons-material/Sync';
 
 const CalendarSync = () => {
     const [googleSync, setGoogleSync] = useState();
@@ -14,14 +16,11 @@ const CalendarSync = () => {
     }, [googleSync]);
 
     function startSync(){
-        //set chrome storage googleSync key to true
-        setGoogleSync(true);
         addFocusSessionToCalendar();
     }
 
     function stopSync(){
-        //set chrome storage googleSync key to false
-        setGoogleSync(false);
+        
         // remove cached auth token
         chrome.identity.getAuthToken({ 'interactive': false }, function(token) {
             if (token) {
@@ -34,6 +33,8 @@ const CalendarSync = () => {
                     console.log('Token revoked and removed.');
                 });
             }
+            //set chrome storage googleSync key to false
+            setGoogleSync(false);
         });
     }
 
@@ -43,6 +44,9 @@ const CalendarSync = () => {
                 console.log(chrome.runtime.lastError);
                 return;
             }
+            //set chrome storage googleSync key to true
+            setGoogleSync(true);
+
             let focusSessionValues = [];
             const openRequest = indexedDB.open('focusSessionHistoryDB', 2);
             openRequest.onsuccess = function (event) {
@@ -113,9 +117,9 @@ const CalendarSync = () => {
 
 
     return (
-        <button onClick={googleSync ? stopSync : startSync}>
+        <Button variant={googleSync ? "outlined" : "contained"} color="primary" startIcon={<SyncIcon />} onClick={googleSync ? stopSync : startSync}>
             {googleSync ? "Stop syncing to google calendar" : "Sync with google calendar"}
-        </button>
+        </Button>
     );
 };
 

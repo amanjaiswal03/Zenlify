@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Box, TextField, Typography } from '@mui/material';
 
 function GeneralSettings() {
     const [maxTabs, setMaxTabs] = useState(); // Default to 10 tabs
@@ -15,13 +16,18 @@ function GeneralSettings() {
     }, [maxTabs]);
 
     return (
-        <div>
-            <h2>General</h2>
-            <label>
-                Allowed number of open tabs :
-                <input type="number" value={maxTabs} onChange={e => setMaxTabs(e.target.value)} />
-            </label>
-        </div>
+        <Box sx={{ padding: 2 }}>
+            <Typography variant="h5" component="div" gutterBottom>
+                Tabs
+            </Typography>
+            <TextField
+                type="number"
+                label="Allowed number of open tabs"
+                value={maxTabs}
+                onChange={e => setMaxTabs(e.target.value)}
+                variant="outlined"
+            />
+        </Box>
     );
 }
 

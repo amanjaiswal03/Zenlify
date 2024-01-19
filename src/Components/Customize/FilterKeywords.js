@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { Box, TextField, Button, Chip, Typography } from '@mui/material';
 
 const KeywordFilter = () => {
     const [keywords, setKeywords] = useState('');
@@ -29,25 +29,36 @@ const KeywordFilter = () => {
     };
 
     return (
-        <div>
-            <label htmlFor="keywords">Distracting Keywords:</label><br />
-            <input 
-                type="text" 
-                id="keywords" 
-                name="keywords" 
-                value={keywords} 
-                onChange={(e) => setKeywords(e.target.value)} 
-            /><br />
-            <button id="save" onClick={saveKeywords}>Save</button>
+        <div style={{ display: 'flex', justifyContent: 'center', height: '100vh' }}>
+        <Box sx={{ padding: 2, maxWidth: 'sm' }}>
+            <Typography component="div" gutterBottom>
+                Enter keyword(s) you want to hide from all websites
+            </Typography>
+            <TextField
+                type="text"
+                label="Enter keywords"
+                value={keywords}
+                onChange={(e) => setKeywords(e.target.value)}
+                variant="outlined"
+                fullWidth
+            />
+            <Button variant="contained" color="primary" onClick={saveKeywords} sx={{ marginTop: 2 }}>
+                Save
+            </Button>
 
-            <div>
+            <Box sx={{ marginTop: 2 }}>
                 {tagKeywords.map((keyword) => (
-                    <span key={keyword}>
-                        {keyword}
-                        <button onClick={() => removeKeyword(keyword)}>Remove</button>
-                    </span>
+                    <Chip
+                        key={keyword}
+                        label={keyword}
+                        onDelete={() => removeKeyword(keyword)}
+                        color="primary"
+                        variant="outlined"
+                        sx={{ margin: 1 }}
+                    />
                 ))}
-            </div>
+            </Box>
+        </Box>
         </div>
     );
 };

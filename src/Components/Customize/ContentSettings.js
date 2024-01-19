@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Box, FormControlLabel, Switch, Typography } from '@mui/material';
 
 function ContentSettings() {
     const [isHideWidgets, setIsHideWidgets] = useState(false);
@@ -18,19 +19,33 @@ function ContentSettings() {
     }, [isHideWidgets, blockAds]);
 
     return (
-        <div>
-            <h1>Content Settings</h1>
-            <label>
-                Distraction free youtube (hide 'watch next' and ads):
-                <input type="checkbox" checked={isHideWidgets} onChange={() => setIsHideWidgets(!isHideWidgets)} />
-            </label>
-            <br />
-            <label>
-                Block common ads from websites:
-                <input type="checkbox" checked={blockAds} onChange={() => setblockAds(!blockAds)} />
-            </label>
-            <br />
-        </div>
+        <Box sx={{ padding: 2 }}>
+            <Typography variant="h5" component="div" gutterBottom>
+                Content
+            </Typography>
+            <FormControlLabel
+                control={
+                    <Switch
+                        checked={isHideWidgets}
+                        onChange={() => setIsHideWidgets(!isHideWidgets)}
+                        name="isHideWidgets"
+                        color="primary"
+                    />
+                }
+                label="Distraction free youtube (hide 'suggestions' and ads)"
+            /> <br />
+            <FormControlLabel
+                control={
+                    <Switch
+                        checked={blockAds}
+                        onChange={() => setblockAds(!blockAds)}
+                        name="blockAds"
+                        color="primary"
+                    />
+                }
+                label="Block common ads from websites"
+            />
+        </Box>
     );
 }
 
