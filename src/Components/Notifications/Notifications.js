@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Box, TextField, Typography } from '@mui/material';
 
 const Notifications = () => {
     const [pomodoroNotificationMessage, setPomodoroNotificationMessage] = useState('');
@@ -20,19 +21,31 @@ const Notifications = () => {
     }, [breakNotificationMessage]);
 
     return (
-        <div>
-            <h1>Notifications</h1>
-            <label>Pomodoro Notification Message</label>
-            <textarea
-                defaultValue={pomodoroNotificationMessage}
-                onBlur={(e) => setPomodoroNotificationMessage(e.target.value)}
-            />
-            <br />
-            <label>Break Notification Message</label>
-            <textarea
-                defaultValue={breakNotificationMessage}
-                onBlur={(e) => setBreakNotificationMessage(e.target.value)}
-            />
+        <div style={{ display: 'flex', justifyContent: 'center', height: '100vh' }}>
+            <Box sx={{ padding: 2 }}>
+                <Typography variant="h4" component="div" gutterBottom>
+                    Notifications
+                </Typography>
+                <TextField
+                    label="Pomodoro Notification Message"
+                    multiline
+                    rows={4}
+                    defaultValue={pomodoroNotificationMessage}
+                    onBlur={(e) => setPomodoroNotificationMessage(e.target.value)}
+                    variant="outlined"
+                    fullWidth
+                    sx={{ marginBottom: 2 }}
+                />
+                <TextField
+                    label="Break Notification Message"
+                    multiline
+                    rows={4}
+                    defaultValue={breakNotificationMessage}
+                    onBlur={(e) => setBreakNotificationMessage(e.target.value)}
+                    variant="outlined"
+                    fullWidth
+                />
+            </Box>
         </div>
     );
 };
