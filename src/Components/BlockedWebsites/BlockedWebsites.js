@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Avatar, Card, Typography } from '@mui/material';
+import { Box, TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Avatar, Card, Typography, Chip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const BlockedWebsites = () => {
@@ -66,7 +66,8 @@ const BlockedWebsites = () => {
                             <Card sx={{ width: '100%', marginTop: 2, display: 'flex', alignItems: 'center'}}>
                                 <Avatar src={`https://www.google.com/s2/favicons?domain=${website}&sz=64`} sx={{ margin: 2 }} />
                                 <ListItemText primary={website} />
-                                <ListItemSecondaryAction sx={{padding: 2}}>
+                                <Chip label="Blocked" color="secondary" sx={{ marginRight: 8 }} />
+                                <ListItemSecondaryAction sx={{padding: 2, marginTop: 1}}>
                                     <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromBlockedWebsites(website)}>
                                         <DeleteIcon />
                                     </IconButton>
