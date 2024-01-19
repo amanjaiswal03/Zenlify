@@ -2,13 +2,19 @@
 <html>
 <head>
     <title>Input</title>
+    <link rel="stylesheet" href="css/input.css">
     <script src="input.js"></script>
 </head>
 <body>
     <form id="inputForm">
-        <label for="achievement">Achievement:</label><br>
-        <input type="text" id="achievement" name="achievement"><br>
+        <div id="inputContainer">
+            <label for="achievement">Achievement:</label><br>
+            <input type="text" id="achievement" name="achievement"><br>
+        </div>
+        <button type="button" id="addAchievement">Add Achievement</button><br>
+        <ul id="achievementList"></ul>
         <input type="submit" value="Submit">
     </form>
+    <script src="input.js"></script>
 </body>
 </html>
