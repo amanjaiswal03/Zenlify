@@ -1,3 +1,9 @@
+/**
+ * Initializes listeners for maximum tabs functionality.
+ * When a new tab is created, checks if the number of open tabs exceeds the allowed limit.
+ * If so, removes the oldest tab and displays a notification.
+ */
+
 export function initMaxTabsListeners(){
     chrome.tabs.onCreated.addListener(() => {
         chrome.storage.sync.get('maxTabs', (result) =>

@@ -1,3 +1,9 @@
+/**
+ * Saves the browsing history of a website.
+ * @param {string} website - The website URL.
+ * @param {number} timeSpent - The time spent on the website in milliseconds.
+ * @param {boolean} visited - Indicates whether the website was visited or not.
+ */
 const saveBrowsingHistory = (website, timeSpent, visited) => {
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -68,7 +74,11 @@ const saveBrowsingHistory = (website, timeSpent, visited) => {
 };
 
 
-// Function to format time in HH:MM:SS format
+/**
+ * Formats the time in HH:MM:SS format.
+ * @param {number} milliseconds - The time in milliseconds.
+ * @returns {string} The formatted time in HH:MM:SS format.
+ */
 const formatTime = (milliseconds) => {
     const seconds = Math.floor(milliseconds / 1000);
     const hours = Math.floor(seconds / 3600);
@@ -79,7 +89,11 @@ const formatTime = (milliseconds) => {
     return formattedTime;
 };
   
-// Function to pad zero for single-digit numbers
+/**
+ * Pads zero for single-digit numbers.
+ * @param {number} number - The number to pad with zero.
+ * @returns {string} The padded number.
+ */
 const padZero = (number) => {
     return number.toString().padStart(2, '0');
 };
@@ -87,6 +101,11 @@ const padZero = (number) => {
 let currentTab;
 let startTime;
 
+/**
+ * Calculates the time spent on a tab and saves the browsing history.
+ * @param {object} tab - The tab object.
+ * @param {boolean} newVisit - Indicates whether it's a new visit or not.
+ */
 function calculateTimeSpent(tab, newVisit) {
   if (tab && startTime && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
     const endTime = Date.now();
@@ -96,6 +115,9 @@ function calculateTimeSpent(tab, newVisit) {
   }
 }
 
+/**
+ * Initializes the browsing history listeners.
+ */
 export function initBrowsingHistoryListeners(){
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete' && tab.active && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {

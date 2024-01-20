@@ -11,11 +11,11 @@
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/*"],
-      "js": ["js/hideWidgets.js"]
+      "js": ["js/content_scripts/hideWidgets.js"]
     },
     {
       "matches": ["<all_urls>"],
-      "js": ["js/filterKeywords.js"]
+      "js": ["js/content_scripts/filterKeywords.js"]
     }
   ],
   "oauth2": {

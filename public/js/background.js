@@ -1,4 +1,4 @@
-import {initPomodoroTimerListeners } from './pomodoroTimer.js';
+import { initPomodoroTimerListeners } from './pomodoroTimer.js';
 import { initBrowsingHistoryListeners} from './browsingHistory.js';
 import { initBlockedWebsitesListeners } from './blockedWebsites.js';
 import { initMaxTabsListeners } from './maxTabs.js';

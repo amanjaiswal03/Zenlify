@@ -1,3 +1,7 @@
+/**
+ * Updates the block ads rules based on the configuration stored in chrome storage.
+ * Fetches the rules from '../rules/blockAds.json' and updates the rules accordingly.
+ */
 function updateBlockAdsRules() {
     fetch('../rules/blockAds.json')
       .then(response => response.json())
