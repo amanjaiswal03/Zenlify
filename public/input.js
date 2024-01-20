@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let achievementCount = 1;
 
     document.getElementById('addAchievement').addEventListener('click', function() {
         var achievement = document.getElementById('achievement').value;
@@ -24,6 +23,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         console.log(achievement);
 
+        // Send the achievement to the background script
+        chrome.runtime.sendMessage({ command: 'inputData', achievement }, function(response) {
+            if (chrome.runtime.lastError) {
+                console.log(chrome.runtime.lastError.message);
+            } else {
+                window.close();
+            }
+        });
+    });
+
+    document.getElementById('nothingToLog').addEventListener('click', function(event) {
+        event.preventDefault();
+        let achievement = '';
         // Send the achievement to the background script
         chrome.runtime.sendMessage({ command: 'inputData', achievement }, function(response) {
             if (chrome.runtime.lastError) {

@@ -51,10 +51,12 @@ const FocusSession = () => {
                 console.log(event);
                 let data = event.target.result;
 
-                console.log(data);
                 if (data) {
-                    // Sort the data by latest start time
-                    data.reverse();
+                    // Sort the data ased on startDateTime
+                    data.sort((a, b) => {
+                        return new Date(b.startDateTime) - new Date(a.startDateTime);
+                    });
+                    console.log(data);
                     setFocusSessionData(data);
                 } else {
                     setFocusSessionData([]);
