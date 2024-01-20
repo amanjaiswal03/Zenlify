@@ -136,34 +136,45 @@ const BrowsingStatistics = () => {
                     </Button>
                     )}
                 </div>
-                <div style = {{marginLeft: "50px"}}>
-                <BarChart width={500} height={300} data={barData}>
+                
+                <BarChartView barData={barData} colors={colors}/>
+                
+            </div>
+        </Container>
+        </div>
+    );
+};
+
+const BarChartView = (props) => {
+    return (
+        <div style={{ display: 'flex' }}>
+            <div style = {{marginLeft: "50px"}}>
+                <BarChart width={500} height={300} data={props.barData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="formattedTimeSpent" label={{ value: 'Time spent', position: 'insideBottomRight', offset: 0 }} />
                     <YAxis label={{ value: 'Times visited', angle: -90, position: 'insideLeft' }}/>
                     <Tooltip formatter={(value, name, props) => [`${props.payload.name},  visited:${props.payload.timesVisited} `]} />
                     <Bar dataKey="timesVisited">
                         {
-                            barData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                            props.barData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={props.colors[index % props.colors.length]} />
                             ))
                         }
                     </Bar>
                 </BarChart>
-                </div>
-                <div>
-                    {barData.map((entry, index) => (
-                        <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: '10px', height: '10px', backgroundColor: colors[index], marginRight: '10px' }}></div>
-                            <p style={{ fontSize: '10px' }}>{entry.name}</p>
-                        </div>
-                    ))}
-                </div>
             </div>
-        </Container>
+            <div>
+                {props.barData.map((entry, index) => (
+                    <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ width: '10px', height: '10px', backgroundColor: props.colors[index], marginRight: '10px' }}></div>
+                        <p>{entry.name}</p>
+                    </div>
+                ))}
+            </div>
         </div>
-    );
-};
+    )
+}
+
 
 export default BrowsingStatistics;
 
