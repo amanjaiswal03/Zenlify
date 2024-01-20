@@ -15,20 +15,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const breakDurationInput = document.getElementById('breakDuration');
     const timerTitle = document.getElementById('timer-title');
 
-    let isTimerRunning = false; // Flag to track if the timer is running
+    let isTimerRunning = false; 
     timerDisplay.textContent = `${pomodoroDurationInput.value ? pomodoroDurationInput.value : '25'}:00`; // Set the initial timer display
 
-    // Function to format time display
     function formatTimeDisplay(minutes, seconds) {
         return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
 
-    // Function to send a message to the background script
     function sendMessageToBackgroundScript(command, pomodoroDuration, breakDuration) {
         chrome.runtime.sendMessage({ command, pomodoroDuration, breakDuration });
     }
 
-    // Function to request timer update from background script
+    
     function requestTimerUpdate() {
         sendMessageToBackgroundScript('getTimer');
     }
@@ -46,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Event listener for start button
     startButton.addEventListener('click', function() {
         const pomodoroDuration = parseInt(pomodoroDurationInput.value) || 25;
         const breakDuration = parseInt(breakDurationInput.value) || 5;
@@ -63,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
         isTimerRunning = !isTimerRunning; // Toggle the timer running flag
     });
 
-    // Event listener for reset button
     resetButton.addEventListener('click', function() {
         const pomodoroDuration = parseInt(pomodoroDurationInput.value) || 25;
         const breakDuration = parseInt(breakDurationInput.value) || 5;
@@ -98,7 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Event listener for block site button
     blockSiteButton.addEventListener('click', function() {
         if (currentUrl){
             chrome.storage.sync.get('blockedWebsites', ({ blockedWebsites }) => {
@@ -119,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Event listener for advanced option button
     advancedOptionButton.addEventListener('click', function() {
         // Open advanced options
         chrome.runtime.openOptionsPage();
