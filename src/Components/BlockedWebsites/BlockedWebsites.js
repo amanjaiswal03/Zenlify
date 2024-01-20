@@ -28,6 +28,7 @@ const BlockedWebsites = () => {
             // Save updated blockedWebsites array to chrome.storage.sync
             chrome.storage.sync.set({ blockedWebsites: updatedBlockedWebsites });
         }
+        setSearchTerm('');
     };
 
     const handleRemoveFromBlockedWebsites = (website) => {
