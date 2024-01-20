@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update timer display when receiving message from background script
     chrome.runtime.onMessage.addListener((msg, sender, response) => {
         if (msg.minutes != undefined && msg.seconds != undefined) {
-            timerDisplay.textContent = `${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`;
+            timerDisplay.textContent = `${msg.minutes < 10 ? '0' : ''}${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`;
         }
         response('Timer updated');
     });
