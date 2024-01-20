@@ -5,8 +5,13 @@ import Paper from '@mui/material/Paper';
 
 const FocusSession = () => {
     const [focusSessionData, setFocusSessionData] = useState([]);
-    const [date, setDate] = useState(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]);
+    const [date, setDate] = useState(getTodayDate());
     const [isExpanded, setIsExpanded] = useState(false);
+
+    // Get today's date in the format "YYYY-MM-DD"
+    function getTodayDate() {
+        return new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
+    }
 
     useEffect(() => {
         filterFocusSessionData(date);
@@ -16,22 +21,27 @@ const FocusSession = () => {
         setDate(e.target.value);
     }
 
-    const filterFocusSessionData = (date) => {
-        //convert date to string and in the format "January 6, 2024"
-        let filteredDate = new Date(date).toLocaleDateString('en-US', {
+    // Convert date to string in the format "January 6, 2024"
+    function formatDate(date) {
+        return new Date(date).toLocaleDateString('en-US', {
             month: 'long',
             day: 'numeric',
             year: 'numeric',
         });
-        console.log(filteredDate);
+    }
+
+    const filterFocusSessionData = (date) => {
+        let filteredDate = formatDate(date);
 
         const openRequest = indexedDB.open('focusSessionHistoryDB', 2);
+
         openRequest.onupgradeneeded = function(e) {
             const db = e.target.result;
             if (!db.objectStoreNames.contains('focusSessionHistory')) {
               db.createObjectStore('focusSessionHistory', { keyPath: ['startDate', 'startTime'] });
             }
         };
+
         openRequest.onsuccess = function (event) {
             const db = event.target.result;
             if (!db.objectStoreNames.contains('focusSessionHistory')) {
@@ -45,18 +55,15 @@ const FocusSession = () => {
             const upperBound = [filteredDate, '\uffff'];
             const range = IDBKeyRange.bound(lowerBound, upperBound);
             const request = objectStore.getAll(range);
-            console.log(request);
 
             request.onsuccess = function (event) {
-                console.log(event);
                 let data = event.target.result;
 
                 if (data) {
-                    // Sort the data ased on startDateTime
+                    // Sort the data based on startDateTime
                     data.sort((a, b) => {
                         return new Date(b.startDateTime) - new Date(a.startDateTime);
                     });
-                    console.log(data);
                     setFocusSessionData(data);
                 } else {
                     setFocusSessionData([]);
@@ -80,7 +87,7 @@ const FocusSession = () => {
                 <TextField
                     type="date"
                     value={date}
-                    max={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]}
+                    max={getTodayDate()}
                     onChange={handleDateChange}
                     variant="outlined"
                     InputLabelProps={{
