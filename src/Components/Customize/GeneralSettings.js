@@ -25,7 +25,7 @@ function GeneralSettings() {
                 type="number"
                 label="Allowed number of open tabs"
                 value={maxTabs}
-                onBlur={e => setMaxTabs(e.target.value)}
+                onChange={e => setMaxTabs(e.target.value)}
                 variant="outlined"
             />
         </Box>
