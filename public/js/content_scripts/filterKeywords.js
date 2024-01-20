@@ -31,7 +31,18 @@ function filterKeywords(keywords) {
 // Get keywords from chrome.storage.sync and filter them initially
 // Set up a mutation observer to filter keywords when the page changes
 chrome.storage.sync.get('blockedKeywords', function(data) {
-  if (data?.blockedKeywords) {
+  if (data.blockedKeywords) {
     filterKeywords(data.blockedKeywords);
   }
 });
+
+const observer = new MutationObserver(function() {
+  if (chrome && chrome.storage && chrome.storage.sync) {
+      chrome.storage.sync.get('blockedKeywords', function(data) {
+          if (data?.blockedKeywords) {
+              filterKeywords(data.blockedKeywords);
+          }
+      });
+  }
+});
+observer.observe(document, { childList: true, subtree: true });

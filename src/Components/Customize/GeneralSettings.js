@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Box, TextField, Typography } from '@mui/material';
 
 function GeneralSettings() {
-    const [maxTabs, setMaxTabs] = useState(); // Default to 10 tabs
+    const [maxTabs, setMaxTabs] = useState(); 
 
     useEffect(() => {
-        // Code to run on component mount
+        // Retrieve maxTabs from chrome.storage.sync when the component mounts
         chrome.storage.sync.get(['maxTabs'], ({ maxTabs }) => {
             setMaxTabs(maxTabs);
         });
     }, []);
 
+    // Save maxTabs to chrome.storage.sync when it changes
     useEffect(() => {
          chrome.storage.sync.set({ maxTabs: maxTabs });
     }, [maxTabs]);
@@ -24,7 +25,7 @@ function GeneralSettings() {
                 type="number"
                 label="Allowed number of open tabs"
                 value={maxTabs}
-                onChange={e => setMaxTabs(e.target.value)}
+                onBlur={e => setMaxTabs(e.target.value)}
                 variant="outlined"
             />
         </Box>
