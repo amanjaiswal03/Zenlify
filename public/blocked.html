@@ -2,22 +2,54 @@
 <html>
 <head>
     <title>Blocked Page</title>
+    <link rel="icon" href="images/zenlify_logo.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 50px;
+            background-color: #f5f5f5;
         }
         h1 {
-            color: red;
+            color: #ff5722;
+            font-size: 36px;
+            margin-bottom: 20px;
         }
         p {
-            color: #333;
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            color: #fff;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>Access Blocked</h1>
-    <p>Sorry, but the page you are trying to access is blocked.</p>
+    <div class="container">
+        <div class="logo">
+            <img src="images/zenlify_logo.png" alt="Zenlify Logo" style="width: 100px; height: 100px;">
+        </div>
+        
+        <h1>Access Blocked</h1>
+        <p>Sorry, but the page you are trying to access is blocked.</p>
+    </div>
 </body>
 </html>
