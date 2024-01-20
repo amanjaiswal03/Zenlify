@@ -84,4 +84,53 @@ const padZero = (number) => {
     return number.toString().padStart(2, '0');
 };
 
-export { saveBrowsingHistory};
+let currentTab;
+let startTime;
+
+function calculateTimeSpent(tab, newVisit) {
+  if (tab && startTime && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
+    const endTime = Date.now();
+    const timeSpent = endTime - startTime;
+    saveBrowsingHistory(new URL(tab.url).hostname, timeSpent, newVisit);
+    console.log(`Time spent on ${tab.url}: ${timeSpent} ms`);
+  }
+}
+
+export function initBrowsingHistoryListeners(){
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete' && tab.active && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
+      calculateTimeSpent(currentTab, false);
+      currentTab = tab;
+      startTime = Date.now();
+    }
+  });
+  
+  chrome.tabs.onActivated.addListener(activeInfo => {
+    chrome.tabs.get(activeInfo.tabId, (tab) => {
+      calculateTimeSpent(currentTab, true);
+      currentTab = tab;
+      startTime = Date.now();
+    });
+  });
+  
+  chrome.idle.setDetectionInterval(15);
+  chrome.idle.onStateChanged.addListener((newState) => {
+    if (newState === 'active') {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError.message);
+          return;
+        }
+        if (tabs.length > 0) {
+          calculateTimeSpent(currentTab, false);
+          currentTab = tabs[0];
+          startTime = Date.now();
+        }
+      });
+    } else if (['idle', 'locked'].includes(newState)) {
+      calculateTimeSpent(currentTab);
+      currentTab = null;
+      startTime = null;
+    }
+  });
+}

@@ -214,6 +214,49 @@ function displayNotification() {
   });
 }
 
+export function initPomodoroTimerListeners(){
+  // FEATURE: Pomodoro Timer event listeners
 
-//export this to background.js
-export {timerRunning, onBreak, startTimer, resetTimer, pauseTimer, logAchievement, sendTimer, openInputPage};
+  chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+    if (notificationId === 'pomodoroNotification' && buttonIndex === 0) {
+      if (!onBreak) {
+        // Handle "Finish Timer" button click
+        resetTimer();
+        
+      } else {
+        // Handle "Start Break" button click
+        chrome.storage.sync.set({ breakTime: true });
+        openInputPage();
+        startTimer();
+      }
+    }
+  });
+
+  // Event listener for messages from the pomodoro timer
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    switch (msg.command) {
+      case 'start':
+        startTimer(msg.pomodoroDuration * 60, msg.breakDuration * 60);
+        break;
+      case 'reset':
+        resetTimer();
+        break;
+      case 'pause':
+        pauseTimer();
+        break;
+      case 'getTimer':
+        sendTimer();
+        break;
+      case 'isRunning':
+        sendResponse(timerRunning);
+        break;
+      case 'inputData':
+        logAchievement(msg.achievement);
+        sendResponse({ status: 'success' });
+        break;
+      default:
+        console.error('Unrecognized command');
+    }
+  });
+}
+
