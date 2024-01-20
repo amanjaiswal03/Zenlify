@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('nothingToLog').addEventListener('click', function(event) {
         event.preventDefault();
         let achievement = '';
-        // Send the achievement to the background script
+        // Send the achievement (empty string in this case) to the background script
         chrome.runtime.sendMessage({ command: 'inputData', achievement }, function(response) {
             if (chrome.runtime.lastError) {
                 console.log(chrome.runtime.lastError.message);
