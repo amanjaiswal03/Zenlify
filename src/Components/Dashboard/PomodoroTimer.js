@@ -51,7 +51,7 @@ function PomodoroTimer() {
     };
 
     const handleResetButtonClick = () => {
-        chrome.runtime.sendMessage({ command: 'reset' });
+        chrome.runtime.sendMessage({ command: 'reset', pomodoroDuration, breakDuration });
         setIsTimerRunning(false);
         setTitle('Focus Session');
     };

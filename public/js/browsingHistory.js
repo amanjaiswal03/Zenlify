@@ -1,3 +1,9 @@
+/**
+ * Saves the browsing history of a website.
+ * @param {string} website - The website URL.
+ * @param {number} timeSpent - The time spent on the website in milliseconds.
+ * @param {boolean} visited - Indicates whether the website was visited or not.
+ */
 const saveBrowsingHistory = (website, timeSpent, visited) => {
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -68,7 +74,11 @@ const saveBrowsingHistory = (website, timeSpent, visited) => {
 };
 
 
-// Function to format time in HH:MM:SS format
+/**
+ * Formats the time in HH:MM:SS format.
+ * @param {number} milliseconds - The time in milliseconds.
+ * @returns {string} The formatted time in HH:MM:SS format.
+ */
 const formatTime = (milliseconds) => {
     const seconds = Math.floor(milliseconds / 1000);
     const hours = Math.floor(seconds / 3600);
@@ -79,9 +89,70 @@ const formatTime = (milliseconds) => {
     return formattedTime;
 };
   
-// Function to pad zero for single-digit numbers
+/**
+ * Pads zero for single-digit numbers.
+ * @param {number} number - The number to pad with zero.
+ * @returns {string} The padded number.
+ */
 const padZero = (number) => {
     return number.toString().padStart(2, '0');
 };
 
-export { saveBrowsingHistory};
+let currentTab;
+let startTime;
+
+/**
+ * Calculates the time spent on a tab and saves the browsing history.
+ * @param {object} tab - The tab object.
+ * @param {boolean} newVisit - Indicates whether it's a new visit or not.
+ */
+function calculateTimeSpent(tab, newVisit) {
+  if (tab && startTime && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
+    const endTime = Date.now();
+    const timeSpent = endTime - startTime;
+    saveBrowsingHistory(new URL(tab.url).hostname, timeSpent, newVisit);
+    console.log(`Time spent on ${tab.url}: ${timeSpent} ms`);
+  }
+}
+
+/**
+ * Initializes the browsing history listeners.
+ */
+export function initBrowsingHistoryListeners(){
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete' && tab.active && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
+      calculateTimeSpent(currentTab, false);
+      currentTab = tab;
+      startTime = Date.now();
+    }
+  });
+  
+  chrome.tabs.onActivated.addListener(activeInfo => {
+    chrome.tabs.get(activeInfo.tabId, (tab) => {
+      calculateTimeSpent(currentTab, true);
+      currentTab = tab;
+      startTime = Date.now();
+    });
+  });
+  
+  chrome.idle.setDetectionInterval(15);
+  chrome.idle.onStateChanged.addListener((newState) => {
+    if (newState === 'active') {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError.message);
+          return;
+        }
+        if (tabs.length > 0) {
+          calculateTimeSpent(currentTab, false);
+          currentTab = tabs[0];
+          startTime = Date.now();
+        }
+      });
+    } else if (['idle', 'locked'].includes(newState)) {
+      calculateTimeSpent(currentTab);
+      currentTab = null;
+      startTime = null;
+    }
+  });
+}

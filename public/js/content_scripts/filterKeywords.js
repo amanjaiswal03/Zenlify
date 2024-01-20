@@ -1,7 +1,7 @@
-// Function to filter keywords
+// Function to filter keywords in the DOM
 function filterKeywords(keywords) {
-    // Recursive function to traverse the DOM
-function traverse(node) {
+  // Recursive function to traverse the DOM
+  function traverse(node) {
     if (node.nodeType === Node.TEXT_NODE && node.parentNode.tagName !== 'SCRIPT') {
       keywords.forEach(keyword => {
         const regex = new RegExp(`\\b${keyword.trim()}\\b`, 'gi');
@@ -13,7 +13,7 @@ function traverse(node) {
             const paragraph = document.createElement('p');
             paragraph.style.color = 'orange';
             paragraph.textContent = 'Content contains blocked keyword';
-  
+
             // Replace the parent element with the new paragraph
             grandParent.replaceChild(paragraph, parent);
           }
@@ -23,27 +23,26 @@ function traverse(node) {
       node.childNodes.forEach(child => traverse(child));
     }
   }
-  
-    // Start traversing from the body
-    traverse(document.body);
+
+  // Start traversing from the body
+  traverse(document.body);
 }
 
-// Get keywords from chrome.storage.sync and filter them initially and Set up a mutation observer to filter keywords when the page changes
+// Get keywords from chrome.storage.sync and filter them initially
+// Set up a mutation observer to filter keywords when the page changes
 chrome.storage.sync.get('blockedKeywords', function(data) {
-    if (data?.blockedKeywords) {
-        filterKeywords(data.blockedKeywords);
-    }
+  if (data.blockedKeywords) {
+    filterKeywords(data.blockedKeywords);
+  }
 });
 
-
-
 const observer = new MutationObserver(function() {
-    if (chrome && chrome.storage && chrome.storage.sync) {
-        chrome.storage.sync.get('blockedKeywords', function(data) {
-            if (data?.blockedKeywords) {
-                filterKeywords(data.blockedKeywords);
-            }
-        });
-    }
+  if (chrome && chrome.storage && chrome.storage.sync) {
+      chrome.storage.sync.get('blockedKeywords', function(data) {
+          if (data?.blockedKeywords) {
+              filterKeywords(data.blockedKeywords);
+          }
+      });
+  }
 });
 observer.observe(document, { childList: true, subtree: true });

@@ -16,6 +16,7 @@ function Sidepanel({ setPage }) {
     return (
         <Drawer variant="permanent" open={true}>
             <Box sx={{ padding: 2 }}>
+                <img src="../../images/zenlify_logo.png" alt="logo" style={{ width: '100px', height: '100px' }} />
                 <Typography variant="h6">Zenlify</Typography>
             </Box>
             <List>

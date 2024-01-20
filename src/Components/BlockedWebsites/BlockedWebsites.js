@@ -2,12 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Avatar, Card, Typography, Chip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+// Component to display a single blocked website
+const BlockedWebsiteItem = ({ website, onRemove }) => (
+    <ListItem key={website}>
+        <Card sx={{ width: '100%', marginTop: 2, display: 'flex', alignItems: 'center'}}>
+            <Avatar src={`https://www.google.com/s2/favicons?domain=${website}&sz=64`} sx={{ margin: 2 }} />
+            <ListItemText primary={website} />
+            <Chip label="Blocked" color="secondary" sx={{ marginRight: 8 }} />
+            <ListItemSecondaryAction sx={{padding: 2, marginTop: 1}}>
+                <IconButton edge="end" aria-label="delete" onClick={() => onRemove(website)}>
+                    <DeleteIcon />
+                </IconButton>
+            </ListItemSecondaryAction>
+        </Card>
+    </ListItem>
+);
+
 const BlockedWebsites = () => {
     const [blockedWebsites, setBlockedWebsites] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [websiteInput, setWebsiteInput] = useState('');
 
+    // Retrieve blocked websites from chrome.storage.sync when the component mounts
     useEffect(() => {
-        // Retrieve blocked websites from chrome.storage.sync
         chrome.storage.sync.get('blockedWebsites', (result) => {
             if (result.blockedWebsites) {
                 setBlockedWebsites(result.blockedWebsites);
@@ -15,27 +31,24 @@ const BlockedWebsites = () => {
         });
     }, []);
 
+    // Add a new website to the blocked list
     const handleAddToBlockedWebsites = () => {
-        // Add website to blockedWebsites array if it is not already present
-        let updatedWebsite = searchTerm;
-        if (!searchTerm.startsWith('www.') && !searchTerm.match(/^[^.]+\.[^.]+\.[^.]+$/)) {
-            updatedWebsite = 'www.' + searchTerm;
+        let websiteToAdd = websiteInput;
+        if (!websiteInput.startsWith('www.') && !websiteInput.match(/^[^.]+\.[^.]+\.[^.]+$/)) {
+            websiteToAdd = 'www.' + websiteInput;
         }
-        if (!blockedWebsites.includes(updatedWebsite)) {
-            const updatedBlockedWebsites = [...blockedWebsites, updatedWebsite];
+        if (!blockedWebsites.includes(websiteToAdd)) {
+            const updatedBlockedWebsites = [...blockedWebsites, websiteToAdd];
             setBlockedWebsites(updatedBlockedWebsites);
-
-            // Save updated blockedWebsites array to chrome.storage.sync
             chrome.storage.sync.set({ blockedWebsites: updatedBlockedWebsites });
         }
+        setWebsiteInput('');
     };
 
-    const handleRemoveFromBlockedWebsites = (website) => {
-        // Remove website from blockedWebsites array
-        const updatedBlockedWebsites = blockedWebsites.filter((item) => item !== website);
+    // Remove a website from the blocked list
+    const handleRemoveFromBlockedWebsites = (websiteToRemove) => {
+        const updatedBlockedWebsites = blockedWebsites.filter((website) => website !== websiteToRemove);
         setBlockedWebsites(updatedBlockedWebsites);
-
-        // Save updated blockedWebsites array to chrome.storage.sync
         chrome.storage.sync.set({ blockedWebsites: updatedBlockedWebsites });
     };
 
@@ -48,8 +61,8 @@ const BlockedWebsites = () => {
                 <TextField
                     fullWidth
                     variant="outlined"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    value={websiteInput}
+                    onChange={(e) => setWebsiteInput(e.target.value)}
                     placeholder="Enter website URL"
                 />
                 <Button 
@@ -62,18 +75,7 @@ const BlockedWebsites = () => {
 
                 <List>
                     {blockedWebsites.map((website) => (
-                        <ListItem key={website}>
-                            <Card sx={{ width: '100%', marginTop: 2, display: 'flex', alignItems: 'center'}}>
-                                <Avatar src={`https://www.google.com/s2/favicons?domain=${website}&sz=64`} sx={{ margin: 2 }} />
-                                <ListItemText primary={website} />
-                                <Chip label="Blocked" color="secondary" sx={{ marginRight: 8 }} />
-                                <ListItemSecondaryAction sx={{padding: 2, marginTop: 1}}>
-                                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromBlockedWebsites(website)}>
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </ListItemSecondaryAction>
-                            </Card>
-                        </ListItem>
+                        <BlockedWebsiteItem website={website} onRemove={handleRemoveFromBlockedWebsites} />
                     ))}
                 </List>
             </Box>

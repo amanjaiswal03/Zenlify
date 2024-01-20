@@ -1,6 +1,6 @@
 // Event listener for when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    let url; // Declare url as a global variable
+    let currentUrl; // Declare currentUrl as a global variable
 
     // Get elements from the DOM
     const urlHostnameElement = document.getElementById('url-hostname');
@@ -15,61 +15,66 @@ document.addEventListener('DOMContentLoaded', function() {
     const breakDurationInput = document.getElementById('breakDuration');
     const timerTitle = document.getElementById('timer-title');
 
-    let isTimerRunning = false; // Add a flag to track if the timer is running
+    let isTimerRunning = false; 
     timerDisplay.textContent = `${pomodoroDurationInput.value ? pomodoroDurationInput.value : '25'}:00`; // Set the initial timer display
 
+    function formatTimeDisplay(minutes, seconds) {
+        return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    function sendMessageToBackgroundScript(command, pomodoroDuration, breakDuration) {
+        chrome.runtime.sendMessage({ command, pomodoroDuration, breakDuration });
+    }
+
+    
+    function requestTimerUpdate() {
+        sendMessageToBackgroundScript('getTimer');
+    }
+
     // Check if the timer is running when the popup is opened
-    chrome.runtime.sendMessage({ command: 'isRunning' }, (response) => {
-        console.log(response);
-        if (response) {
-            startButton.textContent = 'Pause'; // Set the button text to 'Pause'
-            isTimerRunning = true; // Set the timer running flag to true
-        } else {
-            startButton.textContent = 'Start'; // Set the button text to 'Start'
-            isTimerRunning = false; // Set the timer running flag to false
-        }
+    sendMessageToBackgroundScript('isRunning', null, null, (response) => {
+        startButton.textContent = response ? 'Pause' : 'Start';
+        isTimerRunning = response;
     });
 
+    // Get breakTime from storage and update timer title if it exists
     chrome.storage.sync.get(['breakTime'], ({ breakTime }) => {
         if (breakTime) {
             timerTitle.textContent = 'Break Session';
         }
     });
 
-
-    // Event listener for start button
     startButton.addEventListener('click', function() {
+        const pomodoroDuration = parseInt(pomodoroDurationInput.value) || 25;
+        const breakDuration = parseInt(breakDurationInput.value) || 5;
+
         if (isTimerRunning) {
             // Pause the timer
-            chrome.runtime.sendMessage({ command: 'pause' });
-            startButton.textContent = 'Start'; // Change the button text to 'Start'
+            sendMessageToBackgroundScript('pause');
+            startButton.textContent = 'Start';
         } else {
             // Start the timer
-            const pomodoroDuration = parseInt(pomodoroDurationInput.value) || 25;
-            const breakDuration = parseInt(breakDurationInput.value) || 5;
-            chrome.runtime.sendMessage({ command: 'start', pomodoroDuration, breakDuration });
-            startButton.textContent = 'Pause'; // Change the button text to 'Pause'
+            sendMessageToBackgroundScript('start', pomodoroDuration, breakDuration);
+            startButton.textContent = 'Pause';
         }
         isTimerRunning = !isTimerRunning; // Toggle the timer running flag
     });
 
-    // Event listener for reset button
     resetButton.addEventListener('click', function() {
-        chrome.runtime.sendMessage({ command: 'reset' });
-        startButton.textContent = 'Start'; // Reset the button text to 'Start'
-        timerTitle.textContent = 'Focus Session';
-        isTimerRunning = false; // Reset the timer running flag
-    });
+        const pomodoroDuration = parseInt(pomodoroDurationInput.value) || 25;
+        const breakDuration = parseInt(breakDurationInput.value) || 5;
 
-    // Function to request timer update from background script
-    function requestTimerUpdate() {
-        chrome.runtime.sendMessage({ command: 'getTimer' });
-    }
+        // Reset the timer
+        sendMessageToBackgroundScript('reset', pomodoroDuration, breakDuration);
+        startButton.textContent = 'Start';
+        timerTitle.textContent = 'Focus Session';
+        isTimerRunning = false;
+    });
 
     // Update timer display when receiving message from background script
     chrome.runtime.onMessage.addListener((msg, sender, response) => {
         if (msg.minutes != undefined && msg.seconds != undefined) {
-            timerDisplay.textContent = `${msg.minutes}:${msg.seconds < 10 ? '0' : ''}${msg.seconds}`;
+            timerDisplay.textContent = formatTimeDisplay(msg.minutes, msg.seconds);
         }
         response('Timer updated');
     });
@@ -77,47 +82,38 @@ document.addEventListener('DOMContentLoaded', function() {
     requestTimerUpdate();
     setInterval(requestTimerUpdate, 1000);
 
-    // End of Pomodoro timer
-
     // Initialize URL and buttons
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const currentTab = tabs[0];
         if (currentTab) {
-            url = new URL(currentTab.url);
-            if (url.protocol === "https:") {
-                urlHostnameElement.textContent = url.hostname;
+            currentUrl = new URL(currentTab.url);
+            if (currentUrl.protocol === "https:") {
+                urlHostnameElement.textContent = currentUrl.hostname;
                 blockSiteButton.disabled = false;
             }
         }
     });
 
-    // Event listener for block site button
     blockSiteButton.addEventListener('click', function() {
-        try {
-            if (url){
-                chrome.storage.sync.get('blockedWebsites', ({ blockedWebsites }) => {
-                    if (!blockedWebsites.includes(url.hostname)) {
-                        const updatedBlockedWebsites = [...blockedWebsites, url.hostname];
-                        chrome.storage.sync.set({ blockedWebsites: updatedBlockedWebsites });
+        if (currentUrl){
+            chrome.storage.sync.get('blockedWebsites', ({ blockedWebsites }) => {
+                if (!blockedWebsites.includes(currentUrl.hostname)) {
+                    const updatedBlockedWebsites = [...blockedWebsites, currentUrl.hostname];
+                    chrome.storage.sync.set({ blockedWebsites: updatedBlockedWebsites });
 
-                        // Reload current tab
-                        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                            const currentTab = tabs[0];
-                            chrome.tabs.reload(currentTab.id);
-                        });
-                        
-                    } else {
-                        console.log(`URL already blocked: ${url.hostname}`);
-                    }
-                });
-            }
-        } catch (error) {
-            console.error('Invalid URL:', url.hostname);
+                    // Reload current tab
+                    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                        const currentTab = tabs[0];
+                        chrome.tabs.reload(currentTab.id);
+                    });
+                    
+                } else {
+                    console.log(`URL already blocked: ${currentUrl.hostname}`);
+                }
+            });
         }
     });
 
-
-    // Event listener for advanced option button
     advancedOptionButton.addEventListener('click', function() {
         // Open advanced options
         chrome.runtime.openOptionsPage();
