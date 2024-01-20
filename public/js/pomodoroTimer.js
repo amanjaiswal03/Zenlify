@@ -64,13 +64,15 @@ function toggleBreak() {
 }
 
 // Function to reset the timer to its initial state
-function resetTimer() {
+function resetTimer(pomodoroDuration = timerState.pomodoroDuration, breakDuration = timerState.breakDuration) {
   clearInterval(timerState.countdown);
   Object.assign(timerState, {
+    pomodoroDuration: pomodoroDuration,
+    breakDuration: breakDuration,
     timerRunning: false,
     onBreak: false,
     isPaused: false,
-    timerDuration: timerState.pomodoroDuration,
+    timerDuration: pomodoroDuration,
   });
   chrome.storage.sync.set({ breakTime: false });
   sendTimerState();
@@ -232,7 +234,7 @@ export function initPomodoroTimerListeners(){
         // Handle "Start Break" button click
         chrome.storage.sync.set({ breakTime: true });
         openInputPage();
-        startTimer();
+        pauseTimer();
       }
     }
   });
@@ -244,7 +246,7 @@ export function initPomodoroTimerListeners(){
         startTimer(msg.pomodoroDuration * 60, msg.breakDuration * 60);
         break;
       case 'reset':
-        resetTimer();
+        resetTimer(msg.pomodoroDuration * 60, msg.breakDuration * 60);
         break;
       case 'pause':
         pauseTimer();
@@ -257,6 +259,7 @@ export function initPomodoroTimerListeners(){
         break;
       case 'inputData':
         logAchievement(msg.achievement);
+        startTimer();
         sendResponse({ status: 'success' });
         break;
       default:

@@ -55,7 +55,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listener for reset button
     resetButton.addEventListener('click', function() {
-        chrome.runtime.sendMessage({ command: 'reset' });
+        const pomodoroDuration = parseInt(pomodoroDurationInput.value) || 25;
+        const breakDuration = parseInt(breakDurationInput.value) || 5;
+        chrome.runtime.sendMessage({ command: 'reset', pomodoroDuration, breakDuration });
         startButton.textContent = 'Start'; // Reset the button text to 'Start'
         timerTitle.textContent = 'Focus Session';
         isTimerRunning = false; // Reset the timer running flag
