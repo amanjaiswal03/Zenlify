@@ -1,6 +1,7 @@
 {
   "name": "zenlify",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -13,10 +14,12 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "child_process": "^1.0.2",
+    "chrome": "^0.1.0",
     "chrome-types": "^0.1.246",
     "fs": "^0.0.1-security",
     "google-auth-library": "^9.4.2",
     "googleapis": "^130.0.0",
+    "jest": "^27.5.1",
     "os": "^0.1.2",
     "path": "^0.12.7",
     "react": "^18.2.0",
@@ -31,6 +34,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:public": "jest --config jest.config.public.mjs",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -50,5 +54,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.23.8",
+    "babel-jest": "^29.7.0"
   }
 }
