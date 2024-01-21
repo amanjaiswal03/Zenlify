@@ -57,10 +57,12 @@ import FDBKeyRange from 'fake-indexeddb/lib/FDBKeyRange';
 global.indexedDB = new FDBFactory();
 global.IDBKeyRange = FDBKeyRange;
 
-//clear mock data after each test
-afterEach(() => {
+// clear mock data before each test
+beforeEach(() => {
     jest.clearAllMocks();
 });
+
+
 
 
 // Utility function to read from the mocked IndexedDB

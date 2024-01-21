@@ -35,7 +35,6 @@ export const saveBrowsingHistory = async (website, timeSpent, visited) => {
 
       request.onsuccess = function(event) {
         const results = event.target.result;
-        console.log(results);
 
         // Perform operations on the results
         results.forEach(data => {
@@ -65,7 +64,6 @@ export const saveBrowsingHistory = async (website, timeSpent, visited) => {
       };
 
       transaction.oncomplete = function() {
-        console.log("All data has been saved to IndexedDB");
         resolve();
       };
     };
