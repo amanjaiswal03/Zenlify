@@ -75,7 +75,7 @@ const BlockedWebsites = () => {
 
                 <List>
                     {blockedWebsites.map((website) => (
-                        <BlockedWebsiteItem website={website} onRemove={handleRemoveFromBlockedWebsites} />
+                        <BlockedWebsiteItem key={website} website={website} onRemove={handleRemoveFromBlockedWebsites} />
                     ))}
                 </List>
             </Box>
