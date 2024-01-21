@@ -42,15 +42,15 @@ global.chrome = {
     },
 };
 
-import { initPomodoroTimerListeners } from './pomodoroTimer.js';
-import { initBrowsingHistoryListeners} from './browsingHistory.js';
-import { initBlockedWebsitesListeners } from './blockedWebsites.js';
-import { initMaxTabsListeners } from './maxTabs.js';
-import { initUpdateBlockAdsRulesListener } from './blockAds.js';
+import { initPomodoroTimerListeners } from '../pomodoroTimer.js';
+import { initBrowsingHistoryListeners} from '../browsingHistory.js';
+import { initBlockedWebsitesListeners } from '../blockedWebsites.js';
+import { initMaxTabsListeners } from '../maxTabs.js';
+import { initUpdateBlockAdsRulesListener } from '../blockAds.js';
 
 describe('Background Script', () => {
-    beforeEach(() => {
-        // Mock any necessary dependencies or setup
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     it('should initialize Pomodoro Timer listeners', () => {
