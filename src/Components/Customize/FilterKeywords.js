@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Chip, Typography } from '@mui/material';
 
-const KeywordFilter = () => {
+const FilterKeywords = () => {
     const [keywords, setKeywords] = useState('');
     const [tagKeywords, setTagKeywords] = useState([]);
 
@@ -63,4 +63,4 @@ const KeywordFilter = () => {
     );
 };
 
-export default KeywordFilter;
+export default FilterKeywords;
