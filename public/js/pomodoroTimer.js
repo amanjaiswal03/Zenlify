@@ -2,7 +2,7 @@
 // Contains the current state and configuration of the Pomodoro timer
 let timerState = {
   countdown: null,
-  timerDuration: 0, // Timer duration in seconds
+  timerDuration: 25 * 60, // Timer duration in seconds
   timerRunning: false, // Indicates if the timer is active
   onBreak: false, // Flag to check if it's currently a break period
   pomodoroDuration: 25 * 60, // Default Pomodoro duration in seconds (25 minutes)
@@ -222,7 +222,7 @@ function addFocusSessionToCalendar() {
 
 
 // Initializes event listeners for the Pomodoro timer
-export function initPomodoroTimerListeners(){
+function initPomodoroTimerListeners(){
   
   chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
     if (notificationId === 'pomodoroNotification' && buttonIndex === 0) {
@@ -267,3 +267,5 @@ export function initPomodoroTimerListeners(){
     }
   });
 }
+
+export { timerState, session, startTimer, updateTimer, toggleBreak, resetTimer, pauseTimer, sendTimerState, displayNotification, openInputPage, logAchievement, addFocusSessionToCalendar, initPomodoroTimerListeners}

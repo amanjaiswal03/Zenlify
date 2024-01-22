@@ -62,6 +62,12 @@ const CalendarSync = () => {
     // Get focus session values from IndexedDB
     function getFocusSessionValues(token) {
         const openRequest = indexedDB.open('focusSessionHistoryDB', 2);
+        openRequest.onupgradeneeded = function(e) {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('focusSessionHistory')) {
+              db.createObjectStore('focusSessionHistory', { keyPath: ['startDate', 'startTime'] });
+            }
+        };
         openRequest.onsuccess = function (event) {
             const db = event.target.result;
             const transaction = db.transaction(['focusSessionHistory'], 'readwrite');

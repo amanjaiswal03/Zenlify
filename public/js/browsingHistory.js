@@ -4,73 +4,75 @@
  * @param {number} timeSpent - The time spent on the website in milliseconds.
  * @param {boolean} visited - Indicates whether the website was visited or not.
  */
-const saveBrowsingHistory = (website, timeSpent, visited) => {
+export const saveBrowsingHistory = async (website, timeSpent, visited) => {
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
   const formattedTimeSpent = timeSpent ? formatTime(timeSpent) : "00:00:00";
 
-  // Open or create the database
-  const openRequest = indexedDB.open("browsingHistoryDB", 1);
+  return new Promise((resolve, reject) => {
+    // Open or create the database
+    const openRequest = indexedDB.open("browsingHistoryDB", 1);
 
-  openRequest.onupgradeneeded = function(e) {
-    const db = e.target.result;
-    if (!db.objectStoreNames.contains('browsingHistory')) {
-      db.createObjectStore('browsingHistory', { keyPath: ['formattedDate', 'website'] });
-    }
-  };
-
-  openRequest.onsuccess = function(e) {
-    const db = e.target.result;
-    if (!db.objectStoreNames.contains('browsingHistory')) {
-      console.log(`No object store: browsingHistory`);
-      return;
-  }
-    const transaction = db.transaction(['browsingHistory'], 'readwrite');
-    const objectStore = transaction.objectStore('browsingHistory');
-    let matched = false;
-    
-    const request = objectStore.getAll(IDBKeyRange.only([formattedDate, website]));
-
-    request.onsuccess = function(event) {
-      console.log(event);
-      const results = event.target.result;
-      console.log(results);
-
-      // Perform operations on the results
-      results.forEach(data => {
-        if (data.website === website) {
-          matched = true;
-          // Update the time spent on the website
-          if (visited) {
-            data.timesVisited++;
-          }
-          data.timeSpent += timeSpent;
-          data.formattedTimeSpent = formatTime(data.timeSpent);
-          objectStore.put(data);
-          console.log("matched")
-        }  
-      });
-      if (!matched) {
-        // Add the new website to the database
-        const data = {
-          website: website,
-          timesVisited: 1,
-          timeSpent: timeSpent,
-          formattedTimeSpent: formattedTimeSpent,
-          formattedDate: formattedDate
-        };
-        objectStore.add(data);
+    openRequest.onupgradeneeded = function(e) {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('browsingHistory')) {
+        db.createObjectStore('browsingHistory', { keyPath: ['formattedDate', 'website'] });
       }
     };
 
-    transaction.oncomplete = function() {
-      console.log("All data has been saved to IndexedDB");
-    };
-  };
+    openRequest.onsuccess = function(e) {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('browsingHistory')) {
+        console.log(`No object store: browsingHistory`);
+        reject(new Error("No object store: browsingHistory"));
+        return;
+      }
+      const transaction = db.transaction(['browsingHistory'], 'readwrite');
+      const objectStore = transaction.objectStore('browsingHistory');
+      let matched = false;
 
-  openRequest.onerror = function(e) {
-    console.log("Error", e.target.error.name);
-  };
+      const request = objectStore.getAll(IDBKeyRange.only([formattedDate, website]));
+
+      request.onsuccess = function(event) {
+        const results = event.target.result;
+
+        // Perform operations on the results
+        results.forEach(data => {
+          if (data.website === website) {
+            matched = true;
+            // Update the time spent on the website
+            if (visited) {
+              data.timesVisited++;
+            }
+            data.timeSpent += timeSpent;
+            data.formattedTimeSpent = formatTime(data.timeSpent);
+            objectStore.put(data);
+            console.log("matched");
+          }
+        });
+        if (!matched) {
+          // Add the new website to the database
+          const data = {
+            website: website,
+            timesVisited: 1,
+            timeSpent: timeSpent,
+            formattedTimeSpent: formattedTimeSpent,
+            formattedDate: formattedDate
+          };
+          objectStore.add(data);
+        }
+      };
+
+      transaction.oncomplete = function() {
+        resolve();
+      };
+    };
+
+    openRequest.onerror = function(e) {
+      console.log("Error", e.target.error.name);
+      reject(new Error(e.target.error.name));
+    };
+  });
 };
 
 
@@ -79,7 +81,7 @@ const saveBrowsingHistory = (website, timeSpent, visited) => {
  * @param {number} milliseconds - The time in milliseconds.
  * @returns {string} The formatted time in HH:MM:SS format.
  */
-const formatTime = (milliseconds) => {
+export const formatTime = (milliseconds) => {
     const seconds = Math.floor(milliseconds / 1000);
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -94,7 +96,7 @@ const formatTime = (milliseconds) => {
  * @param {number} number - The number to pad with zero.
  * @returns {string} The padded number.
  */
-const padZero = (number) => {
+export const padZero = (number) => {
     return number.toString().padStart(2, '0');
 };
 
@@ -106,11 +108,11 @@ let startTime;
  * @param {object} tab - The tab object.
  * @param {boolean} newVisit - Indicates whether it's a new visit or not.
  */
-function calculateTimeSpent(tab, newVisit) {
+export async function calculateTimeSpent(tab, newVisit) {
   if (tab && startTime && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
     const endTime = Date.now();
     const timeSpent = endTime - startTime;
-    saveBrowsingHistory(new URL(tab.url).hostname, timeSpent, newVisit);
+    await saveBrowsingHistory(new URL(tab.url).hostname, timeSpent, newVisit);
     console.log(`Time spent on ${tab.url}: ${timeSpent} ms`);
   }
 }
