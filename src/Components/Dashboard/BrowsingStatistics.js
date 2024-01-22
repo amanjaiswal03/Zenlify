@@ -24,7 +24,6 @@ const BrowsingStatistics = () => {
 
     const filterBrowsingHistory = () => {
         let filteredDate = new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        console.log(filteredDate);
 
         // Get browsing history from IndexedDB
         const openRequest = indexedDB.open("browsingHistoryDB", 1);
@@ -49,10 +48,8 @@ const BrowsingStatistics = () => {
             const request = objectStore.getAll(range);
 
             request.onsuccess = function(event) {
-                console.log(event);
                 let data = event.target.result;
 
-                console.log(data);
                 if (data) {
                     // Sort the data
                     if (filterBy === 'mostVisited') {
