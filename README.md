@@ -4,11 +4,19 @@ Zenlify is a browser extension designed to enhance your browsing experience by b
 
 ## Features
 
-- Distraction Blocking: Zenlify blocks distracting websites, such as social media platforms, news websites, and entertainment sites, allowing you to focus on your work or studies.
-- Customizable Blocklist: You have full control over which websites to block. Zenlify provides an intuitive interface where you can easily add or remove websites from the blocklist.
-- Pomodoro Timer: Boost your productivity with the built-in Pomodoro timer. Set work and break intervals, and Zenlify will notify you when it's time to take a break or get back to work.
-- Whitelist Mode: Need to access a blocked website temporarily? Zenlify offers a whitelist mode that allows you to unblock specific websites for a set period of time.
-- Statistics and Insights: Track your browsing habits and gain insights into your productivity with Zenlify's comprehensive statistics. Understand how much time you spend on different websites and identify areas for improvement.
+- Pomodoro Timer for Focused Work Sessions: Engage in deep work with our integrated Pomodoro timer. Customize your focus sessions and breaks to fit your workflow and stay on track with your tasks.
+
+- Session Logging & Google Calendar Sync: Automatically log your focus sessions and integrate them with Google Calendar. Gain insights into your productive hours and streamline your scheduling.
+
+- Comprehensive Browsing Analytics: Discover your digital habits with detailed statistics. Track time spent and frequency of visits on each website, empowering you to make informed decisions about your browsing behavior.
+
+- Website Blocking & Management: Say goodbye to digital distractions. Block access to websites that interrupt your focus, and manage your list of blocked sites with ease.
+
+- Tab Limitation for Clutter-Free Browsing: Keep your browser tidy and your mind clear by limiting the number of open tabs. Concentrate on what's important without the overwhelm of excessive tabs.
+
+- YouTube Distraction Shield: Stay focused on your purpose on YouTube by hiding recommendation videos. Eliminate the lure of the endless browsing loop.
+
+- Ad-Blocking & Content Filtering: Enjoy a cleaner, faster, and more focused browsing experience. Block intrusive ads and hide content based on your preferred keywords.
 
 ## Technologies used
 - HTML
