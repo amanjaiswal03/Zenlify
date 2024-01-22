@@ -38,7 +38,7 @@ To get started with the development of Zenlify, follow these steps:
     npm run build
     ```
 
-4. The built extension will be available in the `build` directory. You can then load the extension in your browser for testing. To load the extension, go to [chrome extensions](chrome://extensions) in your browser and click on button 'Load unpacked' and select the `build` directory of the project.
+4. The built extension will be available in the `build` directory. You can then load the extension in your browser for testing. To load the extension, go to chrome://extensions in your browser and click on button 'Load unpacked' and select the `build` directory of the project.
 
 
 ## Testing
