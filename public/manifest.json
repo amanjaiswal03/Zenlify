@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "zenlify",
   "version": "1.0",
-  "description": "Block distracting content on the web",
+  "description": "Enhance you focus, manage your time effectively, and harness the power of productive browsing.",
   "options_page": "index.html",
   "background": {
     "service_worker": "js/background.js",
