@@ -28,7 +28,5 @@
     "default_icon": "images/zenlify_logo.png"
   },
   "permissions": ["alarms", "tabs", "storage", "activeTab", "notifications","declarativeNetRequest",
-  "declarativeNetRequestFeedback", "identity", "idle"],
-
-  "host_permissions": ["<all_urls>"]
+  "declarativeNetRequestFeedback", "identity", "idle"]
 }
