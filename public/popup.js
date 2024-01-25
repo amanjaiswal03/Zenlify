@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
 
-    function sendMessageToBackgroundScript(command, pomodoroDuration, breakDuration) {
-        chrome.runtime.sendMessage({ command, pomodoroDuration, breakDuration });
+    function sendMessageToBackgroundScript(command, pomodoroDuration, breakDuration, callback) {
+        chrome.runtime.sendMessage({ command, pomodoroDuration, breakDuration }, callback);
     }
 
     
