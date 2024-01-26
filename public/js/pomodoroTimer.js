@@ -266,6 +266,19 @@ function initPomodoroTimerListeners(){
         console.error('Unrecognized command');
     }
   });
+
+  //Event listener for when the tab updates to check if the focus session is on and the URL of the tab's page is in the list of blocked websites focus
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    chrome.storage.sync.get(['blockedWebsitesFocus'], ({ blockedWebsitesFocus }) => {
+      if (!timerState.onBreak && timerState.timerRunning && blockedWebsitesFocus.includes(new URL(tab.url).hostname)) {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (tabs.length > 0) {
+            chrome.tabs.update(tabId, { url: 'blocked.html' });
+          }
+        });
+      }
+    });
+  });
 }
 
 export { timerState, session, startTimer, updateTimer, toggleBreak, resetTimer, pauseTimer, sendTimerState, displayNotification, openInputPage, logAchievement, addFocusSessionToCalendar, initPomodoroTimerListeners}
