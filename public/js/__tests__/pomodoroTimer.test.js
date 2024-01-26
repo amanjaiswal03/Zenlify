@@ -27,6 +27,12 @@ global.chrome = {
     },
     windows: {
         create: jest.fn()
+    },
+    tabs: {
+        query: jest.fn((queryInfo, callback) => callback([{ url: 'blocked.html' }])),
+        onUpdated: {
+            addListener: jest.fn()
+        }
     }
 };
   
