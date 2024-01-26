@@ -1,7 +1,7 @@
 {
-  "manifest_version": 4,
+  "manifest_version": 3,
   "name": "zenlify",
-  "version": "1.0",
+  "version": "2.0",
   "description": "Enhance you focus, manage your time effectively, and harness the power of productive browsing.",
   "options_page": "index.html",
   "background": {
