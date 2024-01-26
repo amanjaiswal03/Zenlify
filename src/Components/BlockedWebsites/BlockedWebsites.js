@@ -89,7 +89,7 @@ const BlockedWebsites = () => {
                         title={
                             <Typography variant="subtitle1">
                                 Add websites to the blocked list to prevent access to them.
-                                These websites will be blocked regardless of the focus mode.
+                                These websites will be blocked regardless of the focus session.
                             </Typography>
                         }
                     >
@@ -105,8 +105,8 @@ const BlockedWebsites = () => {
                         title={
                             <Typography variant="subtitle1">
                                 Add websites to the focus blocked list to prevent access to them 
-                                only when the focus mode is enabled. These websites will not be 
-                                blocked outside of the focus mode.
+                                only when the focus session is ongoing. These websites will not be 
+                                blocked outside of the focus session.
                             </Typography>
                         }
                     >
