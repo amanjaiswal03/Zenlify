@@ -138,7 +138,7 @@ const CalendarSync = () => {
 
     return (
         <Button variant={googleSync ? "outlined" : "contained"} color={googleSync ? "secondary" : "primary"} startIcon={<SyncIcon />} onClick={googleSync ? stopSync : startSync}>
-            {googleSync ? "Stop syncing to google calendar" : "Sync with google calendar"}
+            {googleSync ? "Stop adding logs to google calendar" : "Add logs to google calendar"}
         </Button>
     );
 };
