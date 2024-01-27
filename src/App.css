@@ -91,3 +91,7 @@
   align-items: center;
 }
 
+.custom-tooltip {
+  font-size: 18px !important;
+}
+

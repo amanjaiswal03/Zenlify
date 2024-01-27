@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, TextField, Typography } from '@mui/material';
 
 function GeneralSettings() {
-    const [maxTabs, setMaxTabs] = useState(); 
+    const [maxTabs, setMaxTabs] = useState(20); 
 
     useEffect(() => {
         // Retrieve maxTabs from chrome.storage.sync when the component mounts

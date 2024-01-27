@@ -86,12 +86,8 @@ const BlockedWebsites = () => {
                     onClick={handleAddToBlockedWebsites} 
                     sx={{ marginTop: 2 }}>
                     <Tooltip
-                        title={
-                            <Typography variant="subtitle1">
-                                Add websites to the blocked list to prevent access to them.
-                                These websites will be blocked regardless of the focus session.
-                            </Typography>
-                        }
+                    title= "Add websites to the blocked list to prevent access to them. These websites will be blocked regardless of the focus session."
+                    classes={{ tooltip: 'custom-tooltip' }}
                     >
                         Add to Blocked List
                     </Tooltip>
@@ -100,15 +96,11 @@ const BlockedWebsites = () => {
                     variant="contained" 
                     color="secondary" 
                     onClick={handleAddToBlockedWebsitesFocus} 
-                    sx={{ marginTop: 2, marginLeft: 2 }}>
+                    sx={{ marginTop: 2, marginLeft: 2 }}
+                >
                     <Tooltip
-                        title={
-                            <Typography variant="subtitle1">
-                                Add websites to the focus blocked list to prevent access to them 
-                                only when the focus session is ongoing. These websites will not be 
-                                blocked outside of the focus session.
-                            </Typography>
-                        }
+                        title="Add websites to the focus blocked list to prevent access to them only when the focus session is ongoing. These websites will not be blocked outside of the focus session."
+                        classes={{ tooltip: 'custom-tooltip' }}
                     >
                         Add to Focus Blocked List
                     </Tooltip>

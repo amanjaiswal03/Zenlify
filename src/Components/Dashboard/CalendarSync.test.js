@@ -38,7 +38,7 @@ describe('CalendarSync', () => {
 
     it('updates googleSync state and when button is clicked', async () => {
         const { getByText } = render(<CalendarSync />);
-        const button = getByText('Sync with google calendar');
+        const button = getByText('Add logs to google calendar');
 
         // Wrap the click event in act
         act(() => {
@@ -53,13 +53,13 @@ describe('CalendarSync', () => {
 
         // Wait for the state update to be reflected in the DOM
         await waitFor(() => {
-            expect(button.textContent).toBe('Stop syncing to google calendar');
+            expect(button.textContent).toBe('Stop adding logs to google calendar');
         });
     });
 
     it('calls the correct functions when button is clicked', () => {
         const { getByText } = render(<CalendarSync />);
-        const button = getByText('Sync with google calendar');
+        const button = getByText('Add logs to google calendar');
 
         fireEvent.click(button);
 
