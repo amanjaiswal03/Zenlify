@@ -1,72 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Chip, Typography } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import { Box, TextField, Button, Chip, Typography } from "@mui/material";
 
 function sanitizeInput(input) {
-    // Remove any non-alphanumeric characters, except for spaces and commas
-    return input.replace(/[^a-zA-Z0-9 ,]/g, '');
+  // Remove any non-alphanumeric characters, except for spaces and commas
+  return input.replace(/[^a-zA-Z0-9 ,]/g, "");
 }
 
 const FilterKeywords = () => {
-    const [keywords, setKeywords] = useState('');
-    const [tagKeywords, setTagKeywords] = useState([]);
+  const [keywords, setKeywords] = useState("");
+  const [tagKeywords, setTagKeywords] = useState([]);
 
-    useEffect(() => {
-        // Code to run on component mount
-        chrome.storage.sync.get(['blockedKeywords'], ({ blockedKeywords }) => {
-            setTagKeywords(blockedKeywords);
-        });
-    }, []);
+  useEffect(() => {
+    // Code to run on component mount
+    chrome.storage.sync.get(["blockedKeywords"], ({ blockedKeywords }) => {
+      setTagKeywords(blockedKeywords);
+    });
+  }, []);
 
-    useEffect(() => {
-        // Code to run when isHideWidgets changes
-        chrome.storage.sync.set({ blockedKeywords: tagKeywords});
-    }, [tagKeywords]);
+  useEffect(() => {
+    // Code to run when isHideWidgets changes
+    chrome.storage.sync.set({ blockedKeywords: tagKeywords});
+  }, [tagKeywords]);
 
-    const saveKeywords = () => {
-        const sanitizedInput = sanitizeInput(keywords);
-        const keywordArray = sanitizedInput.split(',');
-        setTagKeywords([...tagKeywords, ...keywordArray]);
-        setKeywords('');
-    };
+  const saveKeywords = () => {
+    const sanitizedInput = sanitizeInput(keywords);
+    const keywordArray = sanitizedInput.split(",");
+    setTagKeywords([...tagKeywords, ...keywordArray]);
+    setKeywords("");
+  };
 
-    const removeKeyword = (keyword) => {
-        const updatedKeywords = tagKeywords.filter((kw) => kw !== keyword);
-        setTagKeywords(updatedKeywords);
-    };
+  const removeKeyword = (keyword) => {
+    const updatedKeywords = tagKeywords.filter((kw) => kw !== keyword);
+    setTagKeywords(updatedKeywords);
+  };
 
-    return (
-        <div style={{ display: 'flex', justifyContent: 'center', height: '100vh' }}>
-        <Box sx={{ padding: 2, maxWidth: 'sm' }}>
-            <Typography component="div" gutterBottom>
+  return (
+    <div style={{ display: "flex", justifyContent: "center", height: "100vh" }}>
+      <Box sx={{ padding: 2, maxWidth: "sm" }}>
+        <Typography component="div" gutterBottom>
                 Enter keyword(s) you want to hide from all websites
-            </Typography>
-            <TextField
-                type="text"
-                label="Enter keywords"
-                value={keywords}
-                onChange={(e) => setKeywords(e.target.value)}
-                variant="outlined"
-                fullWidth
-            />
-            <Button variant="contained" color="primary" onClick={saveKeywords} sx={{ marginTop: 2 }}>
+        </Typography>
+        <TextField
+          type="text"
+          label="Enter keywords"
+          value={keywords}
+          onChange={(e) => setKeywords(e.target.value)}
+          variant="outlined"
+          fullWidth
+        />
+        <Button variant="contained" color="primary" onClick={saveKeywords} sx={{ marginTop: 2 }}>
                 Save
-            </Button>
+        </Button>
 
-            <Box sx={{ marginTop: 2 }}>
-                {tagKeywords.map((keyword) => (
-                    <Chip
-                        key={keyword}
-                        label={keyword}
-                        onDelete={() => removeKeyword(keyword)}
-                        color="primary"
-                        variant="outlined"
-                        sx={{ margin: 1 }}
-                    />
-                ))}
-            </Box>
+        <Box sx={{ marginTop: 2 }}>
+          {tagKeywords.map((keyword) => (
+            <Chip
+              key={keyword}
+              label={keyword}
+              onDelete={() => removeKeyword(keyword)}
+              color="primary"
+              variant="outlined"
+              sx={{ margin: 1 }}
+            />
+          ))}
         </Box>
-        </div>
-    );
+      </Box>
+    </div>
+  );
 };
 
 export default FilterKeywords;

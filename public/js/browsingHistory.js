@@ -6,7 +6,7 @@
  */
 export const saveBrowsingHistory = async (website, timeSpent, visited) => {
   const currentDate = new Date();
-  const formattedDate = currentDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+  const formattedDate = currentDate.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
   const formattedTimeSpent = timeSpent ? formatTime(timeSpent) : "00:00:00";
 
   return new Promise((resolve, reject) => {
@@ -15,20 +15,20 @@ export const saveBrowsingHistory = async (website, timeSpent, visited) => {
 
     openRequest.onupgradeneeded = function(e) {
       const db = e.target.result;
-      if (!db.objectStoreNames.contains('browsingHistory')) {
-        db.createObjectStore('browsingHistory', { keyPath: ['formattedDate', 'website'] });
+      if (!db.objectStoreNames.contains("browsingHistory")) {
+        db.createObjectStore("browsingHistory", { keyPath: ["formattedDate", "website"] });
       }
     };
 
     openRequest.onsuccess = function(e) {
       const db = e.target.result;
-      if (!db.objectStoreNames.contains('browsingHistory')) {
-        console.log(`No object store: browsingHistory`);
+      if (!db.objectStoreNames.contains("browsingHistory")) {
+        console.log("No object store: browsingHistory");
         reject(new Error("No object store: browsingHistory"));
         return;
       }
-      const transaction = db.transaction(['browsingHistory'], 'readwrite');
-      const objectStore = transaction.objectStore('browsingHistory');
+      const transaction = db.transaction(["browsingHistory"], "readwrite");
+      const objectStore = transaction.objectStore("browsingHistory");
       let matched = false;
 
       const request = objectStore.getAll(IDBKeyRange.only([formattedDate, website]));
@@ -82,13 +82,13 @@ export const saveBrowsingHistory = async (website, timeSpent, visited) => {
  * @returns {string} The formatted time in HH:MM:SS format.
  */
 export const formatTime = (milliseconds) => {
-    const seconds = Math.floor(milliseconds / 1000);
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
+  const seconds = Math.floor(milliseconds / 1000);
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
   
-    const formattedTime = `${padZero(hours)}:${padZero(minutes)}:${padZero(remainingSeconds)}`;
-    return formattedTime;
+  const formattedTime = `${padZero(hours)}:${padZero(minutes)}:${padZero(remainingSeconds)}`;
+  return formattedTime;
 };
   
 /**
@@ -97,7 +97,7 @@ export const formatTime = (milliseconds) => {
  * @returns {string} The padded number.
  */
 export const padZero = (number) => {
-    return number.toString().padStart(2, '0');
+  return number.toString().padStart(2, "0");
 };
 
 let currentTab;
@@ -109,7 +109,7 @@ let startTime;
  * @param {boolean} newVisit - Indicates whether it's a new visit or not.
  */
 export async function calculateTimeSpent(tab, newVisit) {
-  if (tab && startTime && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
+  if (tab && startTime && (tab.url.startsWith("http") || tab.url.startsWith("https"))) {
     const endTime = Date.now();
     const timeSpent = endTime - startTime;
     await saveBrowsingHistory(new URL(tab.url).hostname, timeSpent, newVisit);
@@ -122,7 +122,7 @@ export async function calculateTimeSpent(tab, newVisit) {
  */
 export function initBrowsingHistoryListeners(){
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === 'complete' && tab.active && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
+    if (changeInfo.status === "complete" && tab.active && (tab.url.startsWith("http") || tab.url.startsWith("https"))) {
       calculateTimeSpent(currentTab, false);
       currentTab = tab;
       startTime = Date.now();
@@ -139,7 +139,7 @@ export function initBrowsingHistoryListeners(){
   
   chrome.idle.setDetectionInterval(15);
   chrome.idle.onStateChanged.addListener((newState) => {
-    if (newState === 'active') {
+    if (newState === "active") {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (chrome.runtime.lastError) {
           console.error(chrome.runtime.lastError.message);
@@ -151,7 +151,7 @@ export function initBrowsingHistoryListeners(){
           startTime = Date.now();
         }
       });
-    } else if (['idle', 'locked'].includes(newState)) {
+    } else if (["idle", "locked"].includes(newState)) {
       calculateTimeSpent(currentTab);
       currentTab = null;
       startTime = null;

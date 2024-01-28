@@ -35,7 +35,7 @@ function startTimer(newPomodoroDuration = timerState.pomodoroDuration, newBreakD
     timerState.timerRunning = true;
     timerState.timerDuration = timerState.isPaused ? timerState.pausedTime : timerState.timerDuration;
     timerState.isPaused = false;
-    chrome.alarms.create('pomodoroTimer', { delayInMinutes:   1 / 60 });
+    chrome.alarms.create("pomodoroTimer", { delayInMinutes:   1 / 60 });
     updateTimer();
   }
 }
@@ -95,7 +95,7 @@ function pauseTimer() {
 function sendTimerState() {
   const minutes = Math.floor(timerState.timerDuration / 60);
   const seconds = timerState.timerDuration % 60;
-  chrome.runtime.sendMessage({ minutes: minutes, seconds: seconds, onBreak: timerState.onBreak }, (response) => {
+  chrome.runtime.sendMessage({ minutes: minutes, seconds: seconds, onBreak: timerState.onBreak }, () => {
     if (chrome.runtime.lastError) {
       console.log(chrome.runtime.lastError.message);
     }
@@ -106,12 +106,12 @@ function sendTimerState() {
 
 // Function to display a notification when a Pomodoro or break period ends
 function displayNotification() {
-  chrome.storage.sync.get(['pomodoroNotificationMessage', 'breakNotificationMessage'], (result) => {
-    const buttonTitle = timerState.onBreak ? 'Start Break' : 'Finish session';
-    chrome.notifications.create('pomodoroNotification', {
-      type: 'basic',
-      iconUrl: '../images/zenlify_logo.png',
-      title: 'Pomodoro Timer',
+  chrome.storage.sync.get(["pomodoroNotificationMessage", "breakNotificationMessage"], (result) => {
+    const buttonTitle = timerState.onBreak ? "Start Break" : "Finish session";
+    chrome.notifications.create("pomodoroNotification", {
+      type: "basic",
+      iconUrl: "../images/zenlify_logo.png",
+      title: "Pomodoro Timer",
       message: timerState.onBreak ? result.pomodoroNotificationMessage : result.breakNotificationMessage,
       buttons: [
         { title: buttonTitle }
@@ -124,20 +124,20 @@ function displayNotification() {
   
 //function to open achievement input page
 function openInputPage() {
-  chrome.windows.create({ url: 'input.html', type: 'popup', width: 500, height: 600 });
+  chrome.windows.create({ url: "input.html", type: "popup", width: 500, height: 600 });
   
   const timezoneOffset = - new Date().getTimezoneOffset();
-  const timezoneHour = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, '0');
-  const timezoneMinute = String(Math.abs(timezoneOffset) % 60).padStart(2, '0');
-  const timezoneSign = timezoneOffset < 0 ? '-' : '+';
+  const timezoneHour = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, "0");
+  const timezoneMinute = String(Math.abs(timezoneOffset) % 60).padStart(2, "0");
+  const timezoneSign = timezoneOffset < 0 ? "-" : "+";
   const timezone = `${timezoneSign}${timezoneHour}:${timezoneMinute}`;
 
 
-  session.startDateTime = new Date(new Date().getTime() - (timerState.pomodoroDuration * 1000) + timezoneOffset * 60 * 1000).toISOString().split('.')[0] + timezone;
-  session.endDateTime = new Date(new Date().getTime() + timezoneOffset * 60 * 1000).toISOString().split('.')[0] + timezone;
-  session.startDate = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });;
-  session.endTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  session.startTime = new Date(new Date().getTime() - (timerState.pomodoroDuration * 1000)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  session.startDateTime = new Date(new Date().getTime() - (timerState.pomodoroDuration * 1000) + timezoneOffset * 60 * 1000).toISOString().split(".")[0] + timezone;
+  session.endDateTime = new Date(new Date().getTime() + timezoneOffset * 60 * 1000).toISOString().split(".")[0] + timezone;
+  session.startDate = new Date().toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
+  session.endTime = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  session.startTime = new Date(new Date().getTime() - (timerState.pomodoroDuration * 1000)).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   session.totalTimeElapsed = new Date(timerState.pomodoroDuration * 1000).toISOString().slice(11, 19);
   session.timezoneArea = Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
@@ -151,26 +151,26 @@ function logAchievement(achievement) {
 
   openRequest.onupgradeneeded = function(e) {
     const db = e.target.result;
-    if (!db.objectStoreNames.contains('focusSessionHistory')) {
-      db.createObjectStore('focusSessionHistory', { keyPath: ['startDate', 'startTime'] });
+    if (!db.objectStoreNames.contains("focusSessionHistory")) {
+      db.createObjectStore("focusSessionHistory", { keyPath: ["startDate", "startTime"] });
     }
   };
 
   openRequest.onsuccess = function(e) {
     const db = e.target.result;
-    if (!db.objectStoreNames.contains('focusSessionHistory')) {
-      console.log(`No object store: focusSessionHistory`);
+    if (!db.objectStoreNames.contains("focusSessionHistory")) {
+      console.log("No object store: focusSessionHistory");
       return;
     }
-    const transaction = db.transaction(['focusSessionHistory'], 'readwrite');
-    const objectStore = transaction.objectStore('focusSessionHistory');
+    const transaction = db.transaction(["focusSessionHistory"], "readwrite");
+    const objectStore = transaction.objectStore("focusSessionHistory");
     objectStore.add(session);
 
     transaction.oncomplete = function() {
       console.log("All data has been saved to IndexedDB");
 
       //check if user wants to sync with google calendar
-      chrome.storage.sync.get('googleSync', function(result) {
+      chrome.storage.sync.get("googleSync", function(result) {
         if (result.googleSync) {
           addFocusSessionToCalendar();
         }
@@ -181,43 +181,43 @@ function logAchievement(achievement) {
   openRequest.onerror = function(e) {
     console.log("Error", e.target.error.name);
   };
-};
+}
 
 // Function to add the focus session to Google Calendar
 function addFocusSessionToCalendar() {
 
-    // get the access token and add the session to the calendar
-    chrome.identity.getAuthToken({ 'interactive': true }, function(token) {
-      if (chrome.runtime.lastError) {
-        console.log(chrome.runtime.lastError);
-        return;
-      }
+  // get the access token and add the session to the calendar
+  chrome.identity.getAuthToken({ "interactive": true }, function(token) {
+    if (chrome.runtime.lastError) {
+      console.log(chrome.runtime.lastError);
+      return;
+    }
   
-      const event = {
-        'summary': 'Focus Session',
-        'description': session.achievement,
-        'start': {
-          'dateTime': session.startDateTime,
-          'timeZone': session.timezoneArea,
-        },
-        'end': {
-          'dateTime': session.endDateTime,
-          'timeZone': session.timezoneArea,
-        },
-      };
-      fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(event)
-      }).then(response => response.json())
+    const event = {
+      "summary": "Focus Session",
+      "description": session.achievement,
+      "start": {
+        "dateTime": session.startDateTime,
+        "timeZone": session.timezoneArea,
+      },
+      "end": {
+        "dateTime": session.endDateTime,
+        "timeZone": session.timezoneArea,
+      },
+    };
+    fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(event)
+    }).then(response => response.json())
       .then(data => {
-          console.log('Event created: ' + data.htmlLink);
+        console.log("Event created: " + data.htmlLink);
       })
-      .catch(error => console.error('Error:', error));
-    });
+      .catch(error => console.error("Error:", error));
+  });
 }
 
 
@@ -225,7 +225,7 @@ function addFocusSessionToCalendar() {
 function initPomodoroTimerListeners(){
   
   chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
-    if (notificationId === 'pomodoroNotification' && buttonIndex === 0) {
+    if (notificationId === "pomodoroNotification" && buttonIndex === 0) {
       if (!timerState.onBreak) {
         // Handle "Finish Timer" button click
         resetTimer();
@@ -242,38 +242,38 @@ function initPomodoroTimerListeners(){
   // Event listener for messages from the pomodoro timer
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     switch (msg.command) {
-      case 'start':
-        startTimer(msg.pomodoroDuration * 60, msg.breakDuration * 60);
-        break;
-      case 'reset':
-        resetTimer(msg.pomodoroDuration * 60, msg.breakDuration * 60);
-        break;
-      case 'pause':
-        pauseTimer();
-        break;
-      case 'getTimer':
-        sendTimerState();
-        break;
-      case 'isRunning':
-        sendResponse(timerState.timerRunning);
-        break;
-      case 'inputData':
-        logAchievement(msg.achievement);
-        startTimer();
-        sendResponse({ status: 'success' });
-        break;
-      default:
-        console.error('Unrecognized command');
+    case "start":
+      startTimer(msg.pomodoroDuration * 60, msg.breakDuration * 60);
+      break;
+    case "reset":
+      resetTimer(msg.pomodoroDuration * 60, msg.breakDuration * 60);
+      break;
+    case "pause":
+      pauseTimer();
+      break;
+    case "getTimer":
+      sendTimerState();
+      break;
+    case "isRunning":
+      sendResponse(timerState.timerRunning);
+      break;
+    case "inputData":
+      logAchievement(msg.achievement);
+      startTimer();
+      sendResponse({ status: "success" });
+      break;
+    default:
+      console.error("Unrecognized command");
     }
   });
 
   //Event listener for when the tab updates to check if the focus session is on and the URL of the tab's page is in the list of blocked websites focus
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    chrome.storage.sync.get(['blockedWebsitesFocus'], ({ blockedWebsitesFocus }) => {
+    chrome.storage.sync.get(["blockedWebsitesFocus"], ({ blockedWebsitesFocus }) => {
       if (!timerState.onBreak && timerState.timerRunning && blockedWebsitesFocus.includes(new URL(tab.url).hostname)) {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           if (tabs.length > 0) {
-            chrome.tabs.update(tabId, { url: 'blocked.html' });
+            chrome.tabs.update(tabId, { url: "blocked.html" });
           }
         });
       }
@@ -281,4 +281,4 @@ function initPomodoroTimerListeners(){
   });
 }
 
-export { timerState, session, startTimer, updateTimer, toggleBreak, resetTimer, pauseTimer, sendTimerState, displayNotification, openInputPage, logAchievement, addFocusSessionToCalendar, initPomodoroTimerListeners}
+export { timerState, session, startTimer, updateTimer, toggleBreak, resetTimer, pauseTimer, sendTimerState, displayNotification, openInputPage, logAchievement, addFocusSessionToCalendar, initPomodoroTimerListeners};
