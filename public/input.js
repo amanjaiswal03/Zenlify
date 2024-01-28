@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var achievement = document.getElementById('achievement').value;
         if (achievement) {
             var li = document.createElement('li');
-            li.textContent = achievement;
+            li.textContent = sanitizeInput(achievement);
             document.getElementById('achievementList').appendChild(li);
             document.getElementById('achievement').value = '';
         }
@@ -46,3 +46,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+
+function sanitizeInput(input) {
+    // Remove any non-alphanumeric characters, except for spaces and commas
+    return input.replace(/[^a-zA-Z0-9 ,]/g, '');
+}

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Chip, Typography } from '@mui/material';
 
+function sanitizeInput(input) {
+    // Remove any non-alphanumeric characters, except for spaces and commas
+    return input.replace(/[^a-zA-Z0-9 ,]/g, '');
+}
+
 const FilterKeywords = () => {
     const [keywords, setKeywords] = useState('');
     const [tagKeywords, setTagKeywords] = useState([]);
@@ -18,7 +23,8 @@ const FilterKeywords = () => {
     }, [tagKeywords]);
 
     const saveKeywords = () => {
-        const keywordArray = keywords.split(',');
+        const sanitizedInput = sanitizeInput(keywords);
+        const keywordArray = sanitizedInput.split(',');
         setTagKeywords([...tagKeywords, ...keywordArray]);
         setKeywords('');
     };

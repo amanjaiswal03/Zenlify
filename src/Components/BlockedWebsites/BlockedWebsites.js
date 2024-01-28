@@ -2,6 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Avatar, Card, Typography, Chip, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+// function to sanitize URL input
+const sanitizeUrl = (url) => {
+    try {
+        if (url !== ''){
+            if (!url.startsWith('www.') && url.match(/^[^.]+\.[^.]+$/)) {
+                url = 'https://www.' + url;
+            }
+            else if ((url.startsWith('www.') && url.match(/^[^.]+\.[^.]+$/)) || url.match(/^[^.]+\.[^.]+\.[^.]+$/)) {
+                url = 'https://' + url;
+            }
+        }
+        return new URL(url).hostname;
+    } catch (error) {
+        throw new Error('Invalid URL');
+    }
+};
+
 // Component to display a single blocked website
 const BlockedWebsiteItem = ({ website, onRemove, isFocus }) => (
     <ListItem key={website}>
@@ -37,10 +54,7 @@ const BlockedWebsites = () => {
     }, []);
 
     const addWebsite = (websiteList, setWebsiteList, storageKey) => {
-        let websiteToAdd = websiteInput;
-        if (!websiteInput.startsWith('www.') && !websiteInput.match(/^[^.]+\.[^.]+\.[^.]+$/)) {
-            websiteToAdd = 'www.' + websiteInput;
-        }
+        let websiteToAdd = sanitizeUrl(websiteInput);
         if (!websiteList.includes(websiteToAdd)) {
             const updatedWebsiteList = [...websiteList, websiteToAdd];
             setWebsiteList(updatedWebsiteList);
