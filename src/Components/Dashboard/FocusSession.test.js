@@ -5,9 +5,8 @@ if (typeof structuredClone === "undefined") {
 }
 
 import React from "react";
-import { render, waitFor, describe, test, expect } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import FocusSession from "./FocusSession";
-import jest from "jest";
 
 // Mock IndexedDB using fake-indexeddb
 import FDBFactory from "fake-indexeddb/lib/FDBFactory";

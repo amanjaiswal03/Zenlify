@@ -1,7 +1,7 @@
 import React from "react";
-import { render, fireEvent, describe, it, expect } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import Sidepanel from "./Sidepanel";
-import jest from "jest";
+
 
 describe("Sidepanel", () => {
   it("renders without crashing", () => {

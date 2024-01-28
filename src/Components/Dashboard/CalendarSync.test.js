@@ -1,8 +1,7 @@
 import React from "react";
-import { render, fireEvent, waitFor, describe, it, expect } from "@testing-library/react";
+import { render, fireEvent, waitFor} from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import CalendarSync from "./CalendarSync";
-import jest from "jest";
 
 // Mock IndexedDB using fake-indexeddb
 import FDBFactory from "fake-indexeddb/lib/FDBFactory";
