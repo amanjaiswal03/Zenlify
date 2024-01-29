@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react";
-import Notifications from "./Notifications";
+import Notifications from "../Notifications";
 
 // Mock the chrome.storage.sync object
 global.chrome = {

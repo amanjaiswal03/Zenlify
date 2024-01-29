@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react";
-import BlockedWebsites from "./BlockedWebsites";
+import BlockedWebsites from "../BlockedWebsites";
 
 
 // Mock the chrome.storage.sync object

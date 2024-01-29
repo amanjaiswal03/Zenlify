@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
-import Sidepanel from "./Sidepanel";
+import Sidepanel from "../Sidepanel";
 
 
 describe("Sidepanel", () => {

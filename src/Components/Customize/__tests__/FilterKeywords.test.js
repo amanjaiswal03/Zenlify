@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react";
-import FilterKeywords from "./FilterKeywords";
+import FilterKeywords from "../FilterKeywords";
 
 // Mock the chrome.storage.sync object
 global.chrome = {

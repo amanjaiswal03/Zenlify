@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react";
-import GeneralSettings from "./GeneralSettings";
+import GeneralSettings from "../GeneralSettings";
 
 // Mock the chrome.storage.sync object
 global.chrome = {

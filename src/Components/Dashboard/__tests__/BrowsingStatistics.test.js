@@ -6,7 +6,7 @@ if (typeof structuredClone === "undefined") {
 
 import React from "react";
 import { render, waitFor } from "@testing-library/react";
-import BrowsingStatistics from "./BrowsingStatistics";
+import BrowsingStatistics from "../BrowsingStatistics";
 
 // Mock IndexedDB using fake-indexeddb
 import FDBFactory from "fake-indexeddb/lib/FDBFactory";

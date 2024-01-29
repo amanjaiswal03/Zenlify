@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
-import PomodoroTimer from "./PomodoroTimer";
+import PomodoroTimer from "../PomodoroTimer";
 
 // Mock the chrome.runtime object
 global.chrome = {
