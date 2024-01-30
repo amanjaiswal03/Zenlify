@@ -35,6 +35,6 @@
       "38": "images/zenlify_logo_38x38.png"
     }
   },
-  "permissions": ["alarms", "tabs", "storage", "activeTab", "notifications","declarativeNetRequest",
+  "permissions": ["alarms", "tabs", "storage", "notifications","declarativeNetRequest",
   "declarativeNetRequestFeedback", "identity", "idle"]
 }
